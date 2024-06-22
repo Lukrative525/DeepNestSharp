@@ -29,7 +29,7 @@ DXF Import/Export: https://github.com/IxMilia/Dxf
 <img src="imgs/NestResultEditor.png"/>
 <img src="imgs/SheetPlacementEditor.png"/>
 On the Sheet Placement Editor you can edit the offsets or Shift+Click on parts to drag/drop in the Preview. 
-FYI dragging is a little out of sync so multiple small moves work better than one large move. . . and atm
+FYI dragging is a little out of sync so multiple small moves work better than one large move... and atm
 you can only move around parts already present; todo => moving from one sheet to another, adding & removing 
 additional parts etc.
 <img src="imgs/SaveFiles.png"/>
@@ -43,7 +43,7 @@ own setup. You can avoid the need for the C++ import altogether if you
 switch off DllImport in the settings; and use the internal C# implementation
 instead. Be warned that this internal implementation is not as performant as 
 the C++ import atm, and it sometimes generates sub-optimal nests but it's 
-an easy-start option that's proving good enough most of the time. . .
+an easy-start option that's proving good enough most of the time...
 
 1. Replace <boost_1.76_path> with your real BOOST (1.76+) path in compile.bat
 

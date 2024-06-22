@@ -159,7 +159,7 @@
       if (state.NestCount == 0 || state.AverageNestTime > 2000)
       {
         hideSecondaryProgress = true;
-        progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, "Placement. . .", nfpPairs.Length);
+        this.progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, "Placement...", nfpPairs.Length);
       }
 
       if (config.UseParallel)

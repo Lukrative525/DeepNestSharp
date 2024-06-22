@@ -28,7 +28,7 @@
       src = 0;
       foreach (var item in detailLoadInfos.Where(o => o.IsIncluded))
       {
-        progressDisplayer.DisplayTransientMessage($"Preload {item.Path}. . .");
+        progressDisplayer.DisplayTransientMessage($"Preload {item.Path}...");
         var det = LoadRawDetail(new FileInfo(item.Path));
 
         AddToPolygons(context, src, det, item.Quantity, progressDisplayer, isPriority: item.IsPriority, isMultiplied: item.IsMultiplied, strictAngles: item.StrictAngle);

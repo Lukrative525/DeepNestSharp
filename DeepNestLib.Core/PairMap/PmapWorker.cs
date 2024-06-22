@@ -32,7 +32,7 @@
     {
       if (NfpPairCache.Count == 0)
       {
-        progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, "Pmap. . .", pairs.Count);
+        progressDisplayer.InitialiseLoopProgress(ProgressBar.Secondary, "Pmap...", pairs.Count);
         showSecondaryProgress = true;
       }
       NfpPair[] ret = new NfpPair[pairs.Count];

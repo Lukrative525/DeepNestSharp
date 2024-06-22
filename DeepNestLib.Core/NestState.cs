@@ -48,14 +48,9 @@
     [Description("Average time per Nest Result since start of the run.")]
     [Category("Performance")]
     [DisplayName("Average Placement Time")]
-    public long AveragePlacementTime => nestCount == 0 ? 0 : totalPlacementTime / nestCount;
+    public long AveragePlacementTime => this.nestCount == 0 ? 0 : this.totalPlacementTime / this.nestCount;
 
-    [Description("The number of times the external C++ Minkowski library has been called. " +
-      "This should stabilise at the number of distinct parts in the nest times the number " +
-      "of rotations. If it keeps growing then the caching mechanism may not be working as " +
-      "intended; possibly due to complexity of the parts, possibly due to overflow " +
-      "failures in the Minkoski Sum. That said if your parts have holes then the calls to" +
-      "hole NfpSums aren't cached?")]
+    [Description("The number of times the external C++ Minkowski library has been called. This should stabilise at the number of distinct parts in the nest times the number of rotations. If it keeps growing then the caching mechanism may not be working as intended; possibly due to complexity of the parts, possibly due to overflow failures in the Minkoski Sum. That said, if your parts have holes then the calls to hole NfpSums aren't cached?")]
     [Category("Minkowski")]
     [DisplayName("Dll Call Counter")]
     public int DllCallCounter => dllCallCounter;

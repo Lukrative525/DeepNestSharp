@@ -227,7 +227,7 @@
         Debug.Print("NestMonitorViewModel.Stop()");
         this.IsStopping = true;
         this.context?.StopNest();
-        this.nestWorkerTask?.Wait(5000);
+        this.nestWorkerTask?.Wait(1000); // Any reason why this can't be shorter than the previous value of 5 seconds?
       }
     }
 

@@ -311,7 +311,7 @@
             }
           }
 
-          this.progressDisplayer.DisplayTransientMessage("Executing Nest. . .");
+          this.progressDisplayer.DisplayTransientMessage("Executing Nest...");
           if (config.UseParallel)
           {
             var end1 = this.procreant.Population.Length / 3;

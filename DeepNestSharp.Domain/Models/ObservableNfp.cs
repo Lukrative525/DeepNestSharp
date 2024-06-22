@@ -25,7 +25,7 @@
     /// <inheritdoc/>
     public override bool IsDirty => true;
 
-    [Description("The gross outer area, not discounting for any holes.")]
+    [Description("The gross outer area, not accounting for any holes.")]
     [Category("Dimensions")]
     /// <inheritdoc/>
     public double Area => this.item.Area;
@@ -127,7 +127,7 @@
     public bool Overlaps(INfp other) => this.item.Overlaps(other);
 
     /// <inheritdoc/>
-    [Description("An index noting the order in the plcement sequence at which this part got inserted.")]
+    [Description("An index noting the order in the placement sequence at which this part got inserted.")]
     [Category("Placement")]
     public int PlacementOrder
     {

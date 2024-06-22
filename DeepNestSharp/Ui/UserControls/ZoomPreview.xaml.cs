@@ -66,12 +66,12 @@
 
       if (e.Delta > 0)
       {
-        slider.Value += 1;
+        slider.Value += Constants.SliderZoomIncrement;
       }
 
       if (e.Delta < 0)
       {
-        slider.Value -= 1;
+        slider.Value -= Constants.SliderZoomIncrement;
       }
 
       e.Handled = true;

@@ -388,7 +388,7 @@
       if (!path.IsClosed)
       {
 #if NCRUNCH
-          // throw new NotImplementedException("The implementation Fel88 added executes path is closed so I'd expect the path to be closed. . .");
+          // throw new NotImplementedException("The implementation Fel88 added executes path is closed so I'd expect the path to be closed...");
           path.EnsureIsClosed();
 #else
         // System.Diagnostics.Debugger.Break();

@@ -100,7 +100,7 @@
         INfp cacheRetrieval;
         if (!MinkowskiCache.TryGetValue(key, out cacheRetrieval))
         {
-          VerboseLogAction?.Invoke($"{path.ToShortString()}-{b.ToShortString()} {key} not found in {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)} so calculating. . .");
+          VerboseLogAction?.Invoke($"{path.ToShortString()}-{b.ToShortString()} {key} not found in {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)} so calculating...");
 #if x64
           // System.Diagnostics.Debug.Print($"{state.CallCounter}.Minkowski_x64");
           long[] longs = arr1.Select(o => (long)o).ToArray();
@@ -208,7 +208,7 @@
 
             if (UseMinkowskiCache)
             {
-              VerboseLogAction?.Invoke($"Add {path.ToShortString()}-{b.ToShortString()} {key} to {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)}. . .");
+              VerboseLogAction?.Invoke($"Add {path.ToShortString()}-{b.ToShortString()} {key} to {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)}...");
               MinkowskiCache.Add(key, ret);
             }
           }
@@ -219,14 +219,14 @@
         }
         else
         {
-          VerboseLogAction?.Invoke($"{path.ToShortString()}-{b.ToShortString()} {key} found in {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)}. . .");
+          VerboseLogAction?.Invoke($"{path.ToShortString()}-{b.ToShortString()} {key} found in {nameof(MinkowskiSum)}.{nameof(MinkowskiCache)}...");
           ret = new NoFitPolygon(cacheRetrieval, WithChildren.Included);
         }
       }
 
       if (minkowskiSumCleaning == MinkowskiSumCleaning.Cleaned)
       {
-        VerboseLogAction?.Invoke("Clean MinkowskiSum. . .");
+        VerboseLogAction?.Invoke("Clean MinkowskiSum...");
         ret.Clean();
       }
 

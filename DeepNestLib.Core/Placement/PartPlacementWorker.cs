@@ -198,7 +198,7 @@
 
       if (this.SheetNfp.CanAcceptPart)
       {
-        this.VerboseLog($"Placement #{this.Placements.Count + 1}. . .");
+        this.VerboseLog($"Placement #{this.Placements.Count + 1}...");
         string clipkey = "s:" + processedPart.Source + "r:" + processedPart.Rotation;
 
         List<List<IntPoint>> combinedNfp;
@@ -307,7 +307,7 @@
 
       if (this.SheetNfp != null && SheetNfp.CanAcceptPart)
       {
-        this.VerboseLog("First placement, put it on the bottom left corner. . .");
+        this.VerboseLog("First placement, put it on the bottom left corner...");
         var candidatePoint = this.SheetNfp.GetCandidatePointClosestToOrigin();
         var position = new PartPlacement(processedPart)
         {
@@ -664,7 +664,7 @@
         this.VerboseLog($"NfpHelper.GetOuterNfp=>TryGetCombinedNfp(j={j})");
         if (outerNfp == null)
         {
-          this.VerboseLog("Minkowski difference failed: very rare but could happen. . .");
+          this.VerboseLog("Minkowski difference failed: very rare but could happen...");
           return false;
         }
 

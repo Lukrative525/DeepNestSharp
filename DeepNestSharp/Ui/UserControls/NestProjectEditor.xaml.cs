@@ -1,16 +1,23 @@
 ﻿namespace DeepNestSharp.Ui.UserControls
 {
+  using System;
   using System.ComponentModel;
   using System.Windows;
   using System.Windows.Controls;
   using System.Windows.Data;
+  using System.Windows.Input;
 
   public partial class NestProjectEditor : UserControl
   {
     private GridViewColumnHeader lastHeaderClicked;
     private ListSortDirection lastDirection = ListSortDirection.Ascending;
+    private HorizontalScrollHandler horizontalScrollHandler;
 
-    public NestProjectEditor() => this.InitializeComponent();
+    public NestProjectEditor()
+    {
+      horizontalScrollHandler = new HorizontalScrollHandler();
+      this.InitializeComponent();
+    }
 
     private static void Sort(ListView sender, string sortBy, ListSortDirection direction)
     {
@@ -26,7 +33,7 @@
     {
       if (sender is ListView listView)
       {
-        var headerClicked = e.OriginalSource as GridViewColumnHeader;
+        GridViewColumnHeader? headerClicked = e.OriginalSource as GridViewColumnHeader;
         ListSortDirection direction;
 
         if (headerClicked != null)
@@ -37,7 +44,7 @@
                 ? ListSortDirection.Ascending
                 : this.lastDirection == ListSortDirection.Ascending ? ListSortDirection.Descending : ListSortDirection.Ascending;
 
-            var columnBinding = headerClicked.Column.DisplayMemberBinding as Binding;
+            Binding? columnBinding = headerClicked.Column.DisplayMemberBinding as Binding;
             var sortBy = (string)(columnBinding?.Path.Path ?? headerClicked.Column.Header);
 
             Sort(listView, sortBy, direction);
@@ -66,6 +73,29 @@
     private bool LastHeaderSame(GridViewColumnHeader? headerClicked)
     {
       return this.lastHeaderClicked == null || this.lastHeaderClicked == headerClicked;
+    }
+
+    private void PartEditor_GotFocus(object sender, RoutedEventArgs e)
+    {
+      ListView? listView = sender as ListView;
+      if (listView is not null)
+      {
+        listView.SelectedIndex = -1;
+      }
+    }
+
+    private void SheetEditor_GotFocus(object sender, RoutedEventArgs e)
+    {
+      ListView? listView = sender as ListView;
+      if (listView is not null)
+      {
+        listView.SelectedIndex = -1;
+      }
+    }
+
+    private void HandleHorizontalScroll(object sender, MouseWheelEventArgs e)
+    {
+      horizontalScrollHandler.ListView_PreviewMouseWheel(sender, e);
     }
   }
 }
