@@ -229,7 +229,7 @@
 
         // console.log('save cache', placed.length - 1);
 
-        //Moved because I'm certain SheetNfp isn't accessed between where this was and here...
+        // Moved because I'm certain SheetNfp isn't accessed between where this was and here...
         var clipperSheetNfp = NfpHelper.InnerNfpToClipperCoordinates(this.SheetNfp.Items, this.Config.ClipperScale);
         this.PrepExport(inputPartIndex, "clipperSheetNfp.scad", () => clipperSheetNfp.ToOpenScadPolygon());
 

@@ -1,11 +1,11 @@
 ﻿namespace DeepNestSharp.Domain.ViewModels
 {
   using System.IO;
+  using CommunityToolkit.Mvvm.Input;
   using DeepNestLib;
   using DeepNestLib.IO;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Ui.Docking;
-  using Microsoft.Toolkit.Mvvm.Input;
 
   public class PartEditorViewModel : FileViewModel
   {

@@ -7,14 +7,14 @@
   using System.Linq;
   using System.Threading.Tasks;
   using System.Windows.Input;
+  using CommunityToolkit.Mvvm.ComponentModel;
+  using CommunityToolkit.Mvvm.Input;
   using DeepNestLib;
   using DeepNestLib.IO;
   using DeepNestLib.NestProject;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.Services;
-  using Microsoft.Toolkit.Mvvm.ComponentModel;
-  using Microsoft.Toolkit.Mvvm.Input;
 
   public abstract class MainViewModel : ObservableRecipient, IMainViewModel
   {

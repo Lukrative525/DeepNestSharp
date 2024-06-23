@@ -45,7 +45,7 @@
     public INestState State { get; }
 
     /// <summary>
-    /// Reinitializes the context and start a new nest.
+    /// Reinitializes the context and starts a new nest.
     /// </summary>
     /// <returns>awaitable Task.</returns>
     public async Task StartNest()

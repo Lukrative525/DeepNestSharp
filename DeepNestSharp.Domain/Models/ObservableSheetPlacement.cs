@@ -4,11 +4,11 @@
   using System.Collections.ObjectModel;
   using System.IO;
   using System.Threading.Tasks;
+  using CommunityToolkit.Mvvm.ComponentModel;
   using DeepNestLib;
   using DeepNestLib.GeneticAlgorithm;
   using DeepNestLib.Geometry;
   using DeepNestLib.Placement;
-  using Microsoft.Toolkit.Mvvm.ComponentModel;
 
   public class ObservableSheetPlacement : ObservableObject, ISheetPlacement, IWrapper<ISheetPlacement, SheetPlacement>
   {
@@ -36,7 +36,7 @@
     private void Set(ISheetPlacement item)
     {
       this.observablePartPlacements.Clear();
-      //this.points?.Clear();
+      // this.points?.Clear();
       var order = 0;
       foreach (var partPlacement in item.PartPlacements)
       {

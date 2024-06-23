@@ -1,12 +1,12 @@
 ﻿namespace DeepNestSharp.Ui.Models
 {
   using System;
+  using CommunityToolkit.Mvvm.ComponentModel;
   using DeepNestLib;
   using DeepNestLib.NestProject;
   using DeepNestSharp.Domain.Models;
   using DeepNestSharp.Domain.ViewModels;
   using Light.GuardClauses;
-  using Microsoft.Toolkit.Mvvm.ComponentModel;
 
   public class ObservableProjectInfo : ObservableObject, IProjectInfo
   {

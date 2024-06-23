@@ -2,17 +2,19 @@
 {
   using System;
   using System.Diagnostics;
+  using System.Linq;
   using System.Runtime.CompilerServices;
   using System.Text;
   using System.Threading.Tasks;
   using System.Windows.Input;
+  using CommunityToolkit.Mvvm.Input;
   using DeepNestLib;
   using DeepNestLib.Placement;
   using DeepNestSharp.Domain;
   using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.Services;
   using DeepNestSharp.Ui.ViewModels;
-  using Microsoft.Toolkit.Mvvm.Input;
+  using Light.GuardClauses.FrameworkExtensions;
 
   public class NestMonitorViewModel : ToolViewModel, INestMonitorViewModel
   {
@@ -192,10 +194,10 @@
       }
 
       this.nestExecutionHelper.InitialiseNest(
-                        this.Context,
-                        nestProjectViewModel.ProjectInfo.SheetLoadInfos,
-                        nestProjectViewModel.ProjectInfo.DetailLoadInfos,
-                        this.ProgressDisplayer);
+        this.Context,
+        nestProjectViewModel.ProjectInfo.SheetLoadInfos,
+        nestProjectViewModel.ProjectInfo.DetailLoadInfos,
+        this.ProgressDisplayer);
       if (this.Context.Sheets.Count == 0)
       {
         this.ProgressDisplayer.DisplayMessageBox("There are no sheets. Please add some and try again.", "DeepNest", MessageBoxIcon.Error);
@@ -279,6 +281,20 @@
       this.mouseCursorService.OverrideCursor = Cursors.Wait;
       this.Stop();
     }
+
+    // private INestResult NestResultWithOriginalSheets(INestResult nestResultWithOffsetSheets)
+    // {
+    //   for (int i = 0; i < nestResultWithOffsetSheets.UsedSheets.Count; i++)
+    //   {
+    //     // Somewhere here, I'm certain there's some shenanigans going on with modifying the reference for the offset sheets.
+    //     int partCount = this.Context.Nest.NestItems.PartsLocal.Count();
+    //     int sheetSource = nestResultWithOffsetSheets.UsedSheets[i].SheetSource - partCount;
+    //     INfp originalSheetNfp = this.Context.Sheets[sheetSource];
+    //     nestResultWithOffsetSheets.UsedSheets[i].Sheet.ReplacePoints(originalSheetNfp);
+    //   }
+ 
+    //   return nestResultWithOffsetSheets;
+    // }
 
     private class NestWorker
     {

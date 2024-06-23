@@ -1,7 +1,7 @@
 ﻿namespace DeepNestSharp.Domain.Models
 {
   using System;
-  using Microsoft.Toolkit.Mvvm.ComponentModel;
+  using CommunityToolkit.Mvvm.ComponentModel;
 
   public abstract class ObservablePropertyObject : ObservableObject
   {

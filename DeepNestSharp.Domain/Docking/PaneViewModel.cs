@@ -1,7 +1,7 @@
 ﻿namespace DeepNestSharp.Domain.Docking
 {
   //using System.Windows.Media;
-  using Microsoft.Toolkit.Mvvm.ComponentModel;
+  using CommunityToolkit.Mvvm.ComponentModel;
 
   public class PaneViewModel : ObservableRecipient
   {

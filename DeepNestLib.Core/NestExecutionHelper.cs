@@ -25,7 +25,7 @@
             for (int i = 0; i < item.Quantity; i++)
             {
               Sheet ns = Sheet.NewSheet(context.Sheets.Count + 1, loadedNfp);
-              context.Sheets.Add(ns); // These are the unmodified sheets! remove before flight
+              context.Sheets.Add(ns);
               ns.Source = src;
             }
           }
@@ -39,7 +39,7 @@
           for (int i = 0; i < item.Quantity; i++)
           {
             Sheet ns = Sheet.NewSheet(context.Sheets.Count + 1, item.Width, item.Height);
-            context.Sheets.Add(ns); // These are the unmodified sheets! remove before flight
+            context.Sheets.Add(ns);
             ns.Source = src;
           }
         }

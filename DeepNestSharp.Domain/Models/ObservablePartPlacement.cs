@@ -2,10 +2,10 @@
 {
   using System.Threading.Tasks;
   using System.Windows.Input;
+  using CommunityToolkit.Mvvm.Input;
   using DeepNestLib;
   using DeepNestLib.IO;
   using DeepNestLib.Placement;
-  using Microsoft.Toolkit.Mvvm.Input;
 
   public class ObservablePartPlacement : ObservablePropertyObject, IPartPlacement
   {

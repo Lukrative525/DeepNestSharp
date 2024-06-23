@@ -2,10 +2,10 @@
 {
   using System.IO;
   using System.Windows.Input;
+  //using System.Windows.Media;
+  using CommunityToolkit.Mvvm.Input;
   using DeepNestSharp.Domain.Docking;
   using DeepNestSharp.Domain.ViewModels;
-  //using System.Windows.Media;
-  using Microsoft.Toolkit.Mvvm.Input;
 
   public abstract class FileViewModel : PaneViewModel, IFileViewModel
   {

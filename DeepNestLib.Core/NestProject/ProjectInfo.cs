@@ -27,7 +27,7 @@ namespace DeepNestLib.NestProject
           ISheetLoadInfo sheetLoadInfo;
           if (config == null)
           {
-            //This is a bit of a fudge for during deserialisation; ultimately this should get set with the deserialised object, just need to get the deserializer past this
+            // This is a bit of a fudge for during deserialisation; ultimately this should get set with the deserialised object, just need to get the deserializer past this
             sheetLoadInfo = new SheetLoadInfo(SvgNest.Config);
           }
           else

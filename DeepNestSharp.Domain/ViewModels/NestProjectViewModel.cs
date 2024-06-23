@@ -3,6 +3,7 @@
   using System;
   using System.Linq;
   using System.Threading.Tasks;
+  using CommunityToolkit.Mvvm.Input;
   using DeepNestLib;
   using DeepNestLib.NestProject;
   using DeepNestSharp.Domain.Models;
@@ -10,7 +11,6 @@
   using DeepNestSharp.Ui.Docking;
   using DeepNestSharp.Ui.Models;
   using Light.GuardClauses;
-  using Microsoft.Toolkit.Mvvm.Input;
 
   public class NestProjectViewModel : FileViewModel, INestProjectViewModel
   {
