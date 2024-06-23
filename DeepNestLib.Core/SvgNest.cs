@@ -304,6 +304,7 @@
                 throw new InvalidOperationException("Sheet should have been a sheet; why wasn't it?");
 #endif
                 clone = new Sheet(poly.CloneTree(), WithChildren.Excluded);
+                originalClone = new Sheet(originalPoly.CloneTree(), WithChildren.Excluded);
               }
 
               clone.Id = sid; // id is the unique id of all parts that will be nested, including cloned duplicates
