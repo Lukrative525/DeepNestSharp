@@ -15,7 +15,7 @@
     public NestResultEditor()
     {
       horizontalScrollHandler = new HorizontalScrollHandler();
-      InitializeComponent();
+      this.InitializeComponent();
     }
 
     private void HandleHorizontalScroll(object sender, MouseWheelEventArgs e)

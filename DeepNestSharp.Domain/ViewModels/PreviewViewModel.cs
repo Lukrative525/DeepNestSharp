@@ -33,11 +33,11 @@
       : base("Preview")
     {
       this.mainViewModel = mainViewModel;
-      this.mainViewModel.ActiveDocumentChanged += MainViewModel_ActiveDocumentChanged;
+      this.mainViewModel.ActiveDocumentChanged += this.MainViewModel_ActiveDocumentChanged;
       this.PropertyChanged += this.PreviewViewModel_PropertyChanged;
     }
 
-    public IFileViewModel ActiveDocument => mainViewModel.ActiveDocument;
+    public IFileViewModel ActiveDocument => this.mainViewModel.ActiveDocument;
 
     public IZoomPreviewDrawingContext ZoomDrawingContext { get; } = new ZoomPreviewDrawingContext();
 
@@ -45,16 +45,16 @@
     {
       get
       {
-        if (fitAllCommand == null)
+        if (this.fitAllCommand == null)
         {
-          fitAllCommand = new RelayCommand(OnFitAll);
+          this.fitAllCommand = new RelayCommand(this.OnFitAll);
         }
 
-        return fitAllCommand;
+        return this.fitAllCommand;
       }
     }
 
-    public IMainViewModel MainViewModel => mainViewModel;
+    public IMainViewModel MainViewModel => this.mainViewModel;
 
     public IPartPlacement SelectedPartPlacement
     {
@@ -73,84 +73,84 @@
         if (this.mainViewModel.ActiveDocument is ISheetPlacementViewModel sheetPlacementViewModel)
         {
           sheetPlacementViewModel.SelectedItem = value;
-          OnPropertyChanged(nameof(SelectedPartPlacement));
+          this.OnPropertyChanged(nameof(this.SelectedPartPlacement));
         }
       }
     }
 
     public IPartPlacement HoverPartPlacement
     {
-      get => hoverPartPlacement;
+      get => this.hoverPartPlacement;
 
       set
       {
-        hoverPartPlacement = value;
-        OnPropertyChanged(nameof(ZoomDrawingContext));
-        OnPropertyChanged(nameof(SelectedPartPlacement));
-        OnPropertyChanged(nameof(HoverPartPlacement));
+        this.hoverPartPlacement = value;
+        this.OnPropertyChanged(nameof(this.ZoomDrawingContext));
+        this.OnPropertyChanged(nameof(this.SelectedPartPlacement));
+        this.OnPropertyChanged(nameof(this.HoverPartPlacement));
       }
     }
 
     public IPointXY MousePosition
     {
-      get => mousePosition;
+      get => this.mousePosition;
       set
       {
-        mousePosition = value;
-        OnPropertyChanged(nameof(MousePosition));
+        this.mousePosition = value;
+        this.OnPropertyChanged(nameof(this.MousePosition));
       }
     }
 
     public IPointXY CanvasPosition
     {
-      get => canvasPosition;
+      get => this.canvasPosition;
       set
       {
-        SetProperty(ref canvasPosition, value, nameof(CanvasPosition));
+        this.SetProperty(ref this.canvasPosition, value, nameof(this.CanvasPosition));
       }
     }
 
     public bool IsDragging
     {
-      get => dragStart != null;
+      get => this.dragStart != null;
     }
 
     public bool IsExperimental
     {
-      get => isExperimental;
+      get => this.isExperimental;
       set
       {
-        SetProperty(ref isExperimental, value, nameof(IsExperimental));
-        InitialiseDrawingContext(mainViewModel);
+        this.SetProperty(ref this.isExperimental, value, nameof(this.IsExperimental));
+        this.InitialiseDrawingContext(this.mainViewModel);
       }
     }
 
     public IPointXY DragOffset
     {
-      get => dragOffset;
+      get => this.dragOffset;
       set
       {
-        SetProperty(ref dragOffset, value, nameof(DragOffset));
+        this.SetProperty(ref this.dragOffset, value, nameof(this.DragOffset));
       }
     }
 
     public IPointXY DragStart
     {
-      get => dragStart;
+      get => this.dragStart;
       set
       {
-        SetProperty(ref dragStart, value, nameof(DragStart));
-        OnPropertyChanged(nameof(IsDragging));
-        OnPropertyChanged(nameof(ZoomDrawingContext));
+        this.SetProperty(ref this.dragStart, value, nameof(this.DragStart));
+        this.OnPropertyChanged(nameof(this.IsDragging));
+        this.OnPropertyChanged(nameof(this.ZoomDrawingContext));
       }
     }
 
     public double CanvasScale
     {
-      get => canvasScale;
+      get => this.canvasScale;
       set
       {
-        SetProperty(ref canvasScale, value, nameof(CanvasScale));
+        this.SetProperty(ref this.canvasScale, value, nameof(this.CanvasScale));
       }
     }
 
@@ -162,7 +162,7 @@
     {
       get
       {
-        return new SvgPoint(ZoomDrawingContext.Extremum(MinMax.Min, XY.X), ZoomDrawingContext.Extremum(MinMax.Min, XY.Y));
+        return new SvgPoint(this.ZoomDrawingContext.Extremum(MinMax.Min, XY.X), this.ZoomDrawingContext.Extremum(MinMax.Min, XY.Y));
       }
     }
 
@@ -170,7 +170,7 @@
     {
       get
       {
-        return new SvgPoint(ZoomDrawingContext.Extremum(MinMax.Max, XY.X), ZoomDrawingContext.Extremum(MinMax.Max, XY.Y));
+        return new SvgPoint(this.ZoomDrawingContext.Extremum(MinMax.Max, XY.X), this.ZoomDrawingContext.Extremum(MinMax.Max, XY.Y));
       }
     }
 
@@ -178,7 +178,7 @@
     {
       get
       {
-        return ZoomDrawingContext.Extremum(MinMax.Max, XY.X) - ZoomDrawingContext.Extremum(MinMax.Min, XY.X);
+        return this.ZoomDrawingContext.Extremum(MinMax.Max, XY.X) - this.ZoomDrawingContext.Extremum(MinMax.Min, XY.X);
       }
     }
 
@@ -186,37 +186,37 @@
     {
       get
       {
-        return ZoomDrawingContext.Extremum(MinMax.Max, XY.Y) - ZoomDrawingContext.Extremum(MinMax.Min, XY.Y);
+        return this.ZoomDrawingContext.Extremum(MinMax.Max, XY.Y) - this.ZoomDrawingContext.Extremum(MinMax.Min, XY.Y);
       }
     }
 
     public IPointXY Actual
     {
-      get => actual;
+      get => this.actual;
       set
       {
-        SetProperty(ref actual, value, nameof(Actual));
+        this.SetProperty(ref this.actual, value, nameof(this.Actual));
       }
     }
 
     public IPointXY Viewport
     {
-      get => viewport;
+      get => this.viewport;
       set
       {
-        SetProperty(ref viewport, value, nameof(Viewport));
+        this.SetProperty(ref this.viewport, value, nameof(this.Viewport));
       }
     }
 
     public double LimitAbsoluteScale(double proposed)
     {
-      if (proposed > CanvasScaleMax)
+      if (proposed > this.CanvasScaleMax)
       {
-        return CanvasScaleMax;
+        return this.CanvasScaleMax;
       }
-      else if (proposed < CanvasScaleMin)
+      else if (proposed < this.CanvasScaleMin)
       {
-        return CanvasScaleMin;
+        return this.CanvasScaleMin;
       }
 
       return proposed;
@@ -229,13 +229,13 @@
     /// <returns>Permissible scale within limits.</returns>
     public double LimitScaleTransform(double proposed)
     {
-      if (proposed * CanvasScale > CanvasScaleMax)
+      if (proposed * this.CanvasScale > this.CanvasScaleMax)
       {
-        proposed = CanvasScaleMax / CanvasScale;
+        proposed = this.CanvasScaleMax / this.CanvasScale;
       }
-      else if (proposed * CanvasScale < CanvasScaleMin)
+      else if (proposed * this.CanvasScale < this.CanvasScaleMin)
       {
-        proposed = CanvasScaleMin / CanvasScale;
+        proposed = this.CanvasScaleMin / this.CanvasScale;
       }
 
       return proposed;
@@ -244,14 +244,14 @@
     public void RaiseSelectItem()
     {
       System.Diagnostics.Debug.Print("Force RaiseSelectItem");
-      OnPropertyChanged(nameof(SelectedPartPlacement));
+      this.OnPropertyChanged(nameof(this.SelectedPartPlacement));
     }
 
     public void RaiseDrawingContext()
     {
       // System.Diagnostics.Debug.Print("Force RaiseDrawingContext");
-      OnPropertyChanged(nameof(ZoomDrawingContext));
-      if (lastActiveViewModel is ISheetPlacementViewModel sheetPlacementViewModel)
+      this.OnPropertyChanged(nameof(this.ZoomDrawingContext));
+      if (this.lastActiveViewModel is ISheetPlacementViewModel sheetPlacementViewModel)
       {
         sheetPlacementViewModel?.RaiseDrawingContext();
       }
@@ -259,10 +259,10 @@
 
     private void InitialiseDrawingContext(object sender)
     {
-      if (lastActiveViewModel != null)
+      if (this.lastActiveViewModel != null)
       {
-        lastActiveViewModel.PropertyChanged -= this.ActiveViewModel_PropertyChanged;
-        lastActiveViewModel = null;
+        this.lastActiveViewModel.PropertyChanged -= this.ActiveViewModel_PropertyChanged; // unsubscribing ActiveViewModel_PropertyChanged from the PropertyChanged notification of lastActiveViewModel.
+        this.lastActiveViewModel = null;
       }
 
       if (sender is IMainViewModel mainViewModel)
@@ -272,20 +272,20 @@
         if (mainViewModel.ActiveDocument is ISheetPlacementViewModel sheetPlacementViewModel &&
             sheetPlacementViewModel.SheetPlacement is ObservableSheetPlacement sheetPlacement)
         {
-          lastActiveViewModel = sheetPlacementViewModel;
+          this.lastActiveViewModel = sheetPlacementViewModel;
           this.ZoomDrawingContext.For(sheetPlacement);
         }
         else if (mainViewModel.ActiveDocument is INestProjectViewModel nestProjectViewModel)
         {
-          lastActiveViewModel = nestProjectViewModel;
+          this.lastActiveViewModel = nestProjectViewModel;
           if (nestProjectViewModel.SelectedDetailLoadInfo is ObservableDetailLoadInfo detailLoadInfo)
           {
-            Set(detailLoadInfo);
+            this.Set(detailLoadInfo);
           }
         }
         else if (mainViewModel.ActiveDocument is PartEditorViewModel partViewModel)
         {
-          lastActiveViewModel = partViewModel;
+          this.lastActiveViewModel = partViewModel;
           if (partViewModel.Part is ObservableNfp nfp)
           {
             this.ZoomDrawingContext.For(nfp);
@@ -293,7 +293,7 @@
         }
         else if (mainViewModel.ActiveDocument is NestResultViewModel nestResultViewModel)
         {
-          lastActiveViewModel = nestResultViewModel;
+          this.lastActiveViewModel = nestResultViewModel;
           if (nestResultViewModel.SelectedItem is ObservableSheetPlacement nestResultSheetPlacement)
           {
             this.ZoomDrawingContext.For(nestResultSheetPlacement);
@@ -301,26 +301,26 @@
         }
         else if (mainViewModel.ActiveDocument is NfpCandidateListViewModel sheetNfpViewModel)
         {
-          lastActiveViewModel = sheetNfpViewModel;
+          this.lastActiveViewModel = sheetNfpViewModel;
           if (sheetNfpViewModel.SelectedItem is INfp sheetNfpItem)
           {
-            Set(sheetNfpViewModel, sheetNfpItem);
+            this.Set(sheetNfpViewModel, sheetNfpItem);
           }
         }
 
-        OnPropertyChanged(nameof(ZoomDrawingContext));
+        this.OnPropertyChanged(nameof(this.ZoomDrawingContext));
 
-        if (lastActiveViewModel != null)
+        if (this.lastActiveViewModel != null)
         {
-          lastActiveViewModel.PropertyChanged += this.ActiveViewModel_PropertyChanged;
+          this.lastActiveViewModel.PropertyChanged += this.ActiveViewModel_PropertyChanged;
         }
       }
     }
 
     private void MainViewModel_ActiveDocumentChanged(object sender, EventArgs e)
     {
-      InitialiseDrawingContext(sender);
-      OnPropertyChanged(nameof(ActiveDocument));
+      this.InitialiseDrawingContext(sender);
+      this.OnPropertyChanged(nameof(this.ActiveDocument));
     }
 
     private void OnFitAll()
@@ -328,25 +328,25 @@
       // Actual.X: The width, in pixels, of the preview graphics window
       // Actual.Y: The height, in pixels, of the preview graphics window
       // ZoomDrawingContext.Extremum(...): seems to calculate extrema of the previewed object in the physical units represented in the dxf file
-      CanvasScale = Math.Min(
-        Actual?.X / (ZoomDrawingContext.Extremum(MinMax.Max, XY.X) - ZoomDrawingContext.Extremum(MinMax.Min, XY.X)) ?? 5,
-        Actual?.Y / (ZoomDrawingContext.Extremum(MinMax.Max, XY.Y) - ZoomDrawingContext.Extremum(MinMax.Min, XY.Y)) ?? 5);
+      this.CanvasScale = Math.Min(
+        this.Actual?.X / (this.ZoomDrawingContext.Extremum(MinMax.Max, XY.X) - this.ZoomDrawingContext.Extremum(MinMax.Min, XY.X)) ?? 5,
+        this.Actual?.Y / (this.ZoomDrawingContext.Extremum(MinMax.Max, XY.Y) - this.ZoomDrawingContext.Extremum(MinMax.Min, XY.Y)) ?? 5);
     }
 
     private void PreviewViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-      if (e.PropertyName == nameof(ZoomDrawingContext))
+      if (e.PropertyName == nameof(this.ZoomDrawingContext))
       {
-        OnPropertyChanged(nameof(UpperBound));
-        OnPropertyChanged(nameof(LowerBound));
-        OnPropertyChanged(nameof(WidthBound));
-        OnPropertyChanged(nameof(HeightBound));
+        this.OnPropertyChanged(nameof(this.UpperBound));
+        this.OnPropertyChanged(nameof(this.LowerBound));
+        this.OnPropertyChanged(nameof(this.WidthBound));
+        this.OnPropertyChanged(nameof(this.HeightBound));
       }
     }
 
     private void ActiveViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-      if (sender == mainViewModel.ActiveDocument)
+      if (sender == this.mainViewModel.ActiveDocument)
       {
         if (sender is ISheetPlacementViewModel sheetPlacementViewModel &&
             (e.PropertyName == nameof(ISheetPlacementViewModel.SelectedItem) ||
@@ -386,10 +386,10 @@
                  e.PropertyName == nameof(NfpCandidateListViewModel.SelectedItem) &&
                  sheetNfpViewModel.SelectedItem is INfp sheetNfpItem)
         {
-          Set(sheetNfpViewModel, sheetNfpItem);
+          this.Set(sheetNfpViewModel, sheetNfpItem);
         }
 
-        OnPropertyChanged(nameof(ZoomDrawingContext));
+        this.OnPropertyChanged(nameof(this.ZoomDrawingContext));
       }
     }
 
@@ -400,9 +400,9 @@
     /// <param name="sheetNfpItem"></param>
     private void Set(NfpCandidateListViewModel sheetNfpViewModel, INfp sheetNfpItem)
     {
-      var sheet = new Sheet(sheetNfpViewModel.NfpCandidateList?.Sheet, WithChildren.Included);
+      Sheet sheet = new Sheet(sheetNfpViewModel.NfpCandidateList?.Sheet, WithChildren.Included);
       sheet.Children.Add(sheetNfpItem);
-      var part = new NoFitPolygon(sheetNfpViewModel.NfpCandidateList?.Part, WithChildren.Included);
+      NoFitPolygon part = new NoFitPolygon(sheetNfpViewModel.NfpCandidateList?.Part, WithChildren.Included);
       this.ZoomDrawingContext.For(new ObservableNfp(sheet));
       this.ZoomDrawingContext.AppendChild(new ObservableFrame(part));
       this.ZoomDrawingContext.AppendChild(new ObservablePoint(part));
@@ -413,8 +413,8 @@
     /// </summary>
     private void Set(ObservableDetailLoadInfo item)
     {
-      var polygon = item.LoadAsync().Result;
-      var shiftedPart = polygon.ShiftToOrigin();
+      INfp polygon = item.LoadAsync().Result;
+      INfp shiftedPart = polygon.ShiftToOrigin();
       this.ZoomDrawingContext.For(new ObservableNfp(shiftedPart));
     }
 

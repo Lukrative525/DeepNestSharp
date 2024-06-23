@@ -36,7 +36,7 @@
     public NestProjectViewModel(IMainViewModel mainViewModel, IFileIoService fileIoService)
       : base(mainViewModel)
     {
-      Initialise(mainViewModel, fileIoService);
+      this.Initialise(mainViewModel, fileIoService);
     }
 
     /// <summary>
@@ -47,55 +47,51 @@
     public NestProjectViewModel(IMainViewModel mainViewModel, string filePath, IFileIoService fileIoService)
       : base(mainViewModel, filePath)
     {
-      Initialise(mainViewModel, fileIoService);
+      this.Initialise(mainViewModel, fileIoService);
     }
 
-    public IAsyncRelayCommand AddPartCommand => addPartCommand ?? (addPartCommand = new AsyncRelayCommand(OnAddPartAsync));
+    public IAsyncRelayCommand AddPartCommand => this.addPartCommand ?? (this.addPartCommand = new AsyncRelayCommand(this.OnAddPartAsync));
 
     public IAsyncRelayCommand AddArbitrarySheetCommand => this.addArbitrarySheetCommand ?? (this.addArbitrarySheetCommand = new AsyncRelayCommand(this.OnAddArbitrarySheetAsync));
 
-    public IRelayCommand ClearPartsCommand => clearPartsCommand ?? (clearPartsCommand = new RelayCommand(OnClearParts));
-
     public IRelayCommand AddRectangleSheetCommand => this.addRectangleSheetCommand ?? (this.addRectangleSheetCommand = new RelayCommand(this.OnAddRectangleSheet));
 
-    public IRelayCommand<IDetailLoadInfo> RemovePartCommand => removePartCommand ?? (removePartCommand = new RelayCommand<IDetailLoadInfo>(OnRemovePart));
+    public IRelayCommand ClearPartsCommand => this.clearPartsCommand ?? (this.clearPartsCommand = new RelayCommand(this.OnClearParts));
 
-    public IRelayCommand<ISheetLoadInfo> RemoveSheetCommand => removeSheetCommand ?? (removeSheetCommand = new RelayCommand<ISheetLoadInfo>(OnRemoveSheet));
+    public IRelayCommand<IDetailLoadInfo> RemovePartCommand => this.removePartCommand ?? (this.removePartCommand = new RelayCommand<IDetailLoadInfo>(this.OnRemovePart));
+
+    public IRelayCommand<ISheetLoadInfo> RemoveSheetCommand => this.removeSheetCommand ?? (this.removeSheetCommand = new RelayCommand<ISheetLoadInfo>(this.OnRemoveSheet));
 
     public AsyncRelayCommand ExecuteNestCommand => this.executeNestCommand ?? (this.executeNestCommand = new AsyncRelayCommand(this.OnExecuteNest, this.CanExecuteNest));
 
     public override string FileDialogFilter => DeepNestLib.NestProject.ProjectInfo.FileDialogFilter;
 
-    public IRelayCommand<string> LoadPartCommand => loadPartCommand ?? (loadPartCommand = new RelayCommand<string>(OnLoadPart));
+    public IRelayCommand<string> LoadPartCommand => this.loadPartCommand ?? (this.loadPartCommand = new RelayCommand<string>(this.OnLoadPart));
 
-    public IProjectInfo ProjectInfo => observableProjectInfo ?? (observableProjectInfo = new ObservableProjectInfo(MainViewModel));
+    public IProjectInfo ProjectInfo => this.observableProjectInfo ?? (this.observableProjectInfo = new ObservableProjectInfo(this.MainViewModel));
 
     public IDetailLoadInfo SelectedDetailLoadInfo
     {
-#pragma warning disable CS8603 // Possible null reference return.
-      get => selectedDetailLoadInfo;
-#pragma warning restore CS8603 // Possible null reference return.
-      set => SetProperty(ref selectedDetailLoadInfo, value, nameof(SelectedDetailLoadInfo));
+      get => this.selectedDetailLoadInfo;
+      set => this.SetProperty(ref this.selectedDetailLoadInfo, value, nameof(this.SelectedDetailLoadInfo));
     }
 
     public int SelectedDetailLoadInfoIndex
     {
-      get => selectedDetailLoadInfoIndex;
-      set => SetProperty(ref selectedDetailLoadInfoIndex, value);
+      get => this.selectedDetailLoadInfoIndex;
+      set => this.SetProperty(ref this.selectedDetailLoadInfoIndex, value);
     }
 
     public ISheetLoadInfo SelectedSheetLoadInfo
     {
-#pragma warning disable CS8603 // Possible null reference return.
-      get => selectedSheetLoadInfo;
-#pragma warning restore CS8603 // Possible null reference return.
-      set => SetProperty(ref selectedSheetLoadInfo, value, nameof(SelectedSheetLoadInfo));
+      get => this.selectedSheetLoadInfo;
+      set => this.SetProperty(ref this.selectedSheetLoadInfo, value, nameof(this.SelectedSheetLoadInfo));
     }
 
     public int SelectedSheetLoadInfoIndex
     {
-      get => selectedSheetLoadInfoIndex;
-      set => SetProperty(ref selectedSheetLoadInfoIndex, value);
+      get => this.selectedSheetLoadInfoIndex;
+      set => this.SetProperty(ref this.selectedSheetLoadInfoIndex, value);
     }
 
     public override string TextContent { get => this.ProjectInfo.ToJson(); }
@@ -135,7 +131,7 @@
 
     private void Initialise(IMainViewModel mainViewModel, IFileIoService fileIoService)
     {
-      this.ProjectInfo.MustBe(observableProjectInfo);
+      this.ProjectInfo.MustBe(this.observableProjectInfo);
       if (this.observableProjectInfo != null)
       {
         this.observableProjectInfo.IsDirtyChanged += this.ObservableProjectInfo_IsDirtyChanged;
@@ -147,14 +143,14 @@
 
     private void NestMonitorViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-      if (MainViewModel.DispatcherService.InvokeRequired)
+      if (this.MainViewModel.DispatcherService.InvokeRequired)
       {
-        MainViewModel.DispatcherService.Invoke(() => NestMonitorViewModel_PropertyChanged(sender, e));
+        this.MainViewModel.DispatcherService.Invoke(() => this.NestMonitorViewModel_PropertyChanged(sender, e));
       }
 
       if (e.PropertyName == $"{nameof(INestMonitorViewModel.IsRunning)}")
       {
-        MainViewModel.DispatcherService.Invoke(() => executeNestCommand?.NotifyCanExecuteChanged());
+        this.MainViewModel.DispatcherService.Invoke(() => this.executeNestCommand?.NotifyCanExecuteChanged());
       }
     }
 
@@ -170,16 +166,16 @@
       {
         if (!string.IsNullOrWhiteSpace(filePath) && this.fileIoService.Exists(filePath))
         {
-          var newPart = new DetailLoadInfo()
+          DetailLoadInfo newPart = new DetailLoadInfo()
           {
             Path = filePath,
           };
 
-          observableProjectInfo?.DetailLoadInfos.Add(newPart);
+          this.observableProjectInfo?.DetailLoadInfos.Add(newPart);
         }
       }
 
-      Contextualise();
+      this.Contextualise();
       this.IsDirty = true;
     }
 
@@ -201,37 +197,37 @@
 
     private void OnAddRectangleSheet()
     {
-      var newSheet = new SheetLoadInfo(this.ProjectInfo.Config);
-      observableProjectInfo?.SheetLoadInfos.Add(newSheet);
+      SheetLoadInfo newSheet = new SheetLoadInfo(this.ProjectInfo.Config);
+      this.observableProjectInfo?.SheetLoadInfos.Add(newSheet);
 
-      Contextualise();
+      this.Contextualise();
       this.IsDirty = true;
     }
 
     private void OnClearParts()
     {
-      observableProjectInfo?.DetailLoadInfos.Clear();
-      Contextualise();
+      this.observableProjectInfo?.DetailLoadInfos.Clear();
+      this.Contextualise();
       this.IsDirty = true;
     }
 
     private void Contextualise()
     {
-      OnPropertyChanged(nameof(ProjectInfo));
+      this.OnPropertyChanged(nameof(this.ProjectInfo));
       this.executeNestCommand.NotifyCanExecuteChanged();
     }
 
     private async Task OnExecuteNest()
     {
-      MainViewModel.SetSelectedToolView(this);
-      await MainViewModel.NestMonitorViewModel.TryStartAsync(this).ConfigureAwait(false);
+      this.MainViewModel.SetSelectedToolView(this);
+      await this.MainViewModel.NestMonitorViewModel.TryStartAsync(this).ConfigureAwait(false);
     }
 
     private void OnLoadPart(string path)
     {
       if (!string.IsNullOrWhiteSpace(path))
       {
-        MainViewModel.LoadPart(path);
+        this.MainViewModel.LoadPart(path);
       }
     }
 
@@ -240,7 +236,7 @@
       if (arg != null)
       {
         this.ProjectInfo.DetailLoadInfos.Remove(arg);
-        Contextualise();
+        this.Contextualise();
       }
     }
 
@@ -249,7 +245,7 @@
       if (arg != null)
       {
         this.ProjectInfo.SheetLoadInfos.Remove(arg);
-        Contextualise();
+        this.Contextualise();
       }
     }
   }

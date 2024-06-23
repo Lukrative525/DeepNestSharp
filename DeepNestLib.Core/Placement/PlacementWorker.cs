@@ -50,48 +50,42 @@
       this.state = state;
     }
 
-    PartPlacementWorker ITestPlacementWorker.LastPartPlacementWorker
-    {
-      get
-      {
-        return lastPartPlacementWorker;
-      }
-    }
+    PartPlacementWorker ITestPlacementWorker.LastPartPlacementWorker => this.lastPartPlacementWorker;
 
     /// <summary>
     /// Gets a value indicating whether the current loop started as a PriorityPLacement.
     /// Note as parts get placed this could change; hence we memoise at the start of each placement.
     /// </summary>
-    private bool StartedAsPriorityPlacement => config.UsePriority && unplacedParts.Any(o => o.IsPriority);
+    private bool StartedAsPriorityPlacement => this.config.UsePriority && this.unplacedParts.Any(o => o.IsPriority);
 
     internal NestResult PlaceParts()
     {
-      VerboseLog("PlaceParts");
+      this.VerboseLog("PlaceParts");
       if (this.sheets == null || this.sheets.Count() == 0)
       {
         return null;
       }
 
-      Initialise();
+      this.Initialise();
       ISheet sheet;
       ISheet originalSheet;
       Queue<ISheet> requeue;
       List<IPartPlacement> placements;
-      while (unplacedParts.Count > 0 && TryGetSheet(out sheet, out originalSheet, out placements, out requeue))
+      while (this.unplacedParts.Count > 0 && this.TryGetSheet(out sheet, out originalSheet, out placements, out requeue))
       {
-        var isPriorityPlacement = config.UsePriority && StartedAsPriorityPlacement;
+        var isPriorityPlacement = this.config.UsePriority && this.StartedAsPriorityPlacement;
         if (isPriorityPlacement)
         {
-          VerboseLog("Priority Placement.");
+          this.VerboseLog("Priority Placement.");
         }
 
-        lastPartPlacementWorker = new PartPlacementWorker(this, config, gene, placements, sheet, nfpHelper, state);
-        var processingParts = (isPriorityPlacement ? unplacedParts.Where(o => o.IsPriority).Union(unplacedParts.Where(o => !o.IsPriority)) : unplacedParts).ToArray();
+        this.lastPartPlacementWorker = new PartPlacementWorker(this, this.config, this.gene, placements, sheet, this.nfpHelper, this.state);
+        INfp[] processingParts = (isPriorityPlacement ? this.unplacedParts.Where(o => o.IsPriority).Union(this.unplacedParts.Where(o => !o.IsPriority)) : this.unplacedParts).ToArray();
         for (int processingPartIndex = 0; processingPartIndex < processingParts.Length; processingPartIndex++)
         {
-          var processingPart = processingParts[processingPartIndex];
-          var partIndex = gene.IndexOf(gene.Single(o => o.Part.Id == processingPart.Id));
-          var processPartResult = lastPartPlacementWorker.ProcessPart(processingParts[processingPartIndex], partIndex);
+          INfp processingPart = processingParts[processingPartIndex];
+          var partIndex = this.gene.IndexOf(this.gene.Single(o => o.Part.Id == processingPart.Id));
+          InnerFlowResult processPartResult = this.lastPartPlacementWorker.ProcessPart(processingParts[processingPartIndex], partIndex);
           if (processPartResult == InnerFlowResult.Break)
           {
             break;
@@ -102,21 +96,21 @@
           }
         }
 
-        RequeueSheets(sheet, requeue, isPriorityPlacement);
-        if (lastPartPlacementWorker.Placements != null && lastPartPlacementWorker.Placements.Count > 0)
+        this.RequeueSheets(sheet, requeue, isPriorityPlacement);
+        if (this.lastPartPlacementWorker.Placements != null && this.lastPartPlacementWorker.Placements.Count > 0)
         {
-          VerboseLog($"Add {config.PlacementType} placement {sheet.ToShortString()}.");
-          allPlacements.Add(new SheetPlacement(config.PlacementType, sheet, originalSheet, lastPartPlacementWorker.Placements, lastPartPlacementWorker.MergedLength, config.ClipperScale));
+          this.VerboseLog($"Add {this.config.PlacementType} placement {sheet.ToShortString()}.");
+          this.allPlacements.Add(new SheetPlacement(this.config.PlacementType, sheet, originalSheet, this.lastPartPlacementWorker.Placements, this.lastPartPlacementWorker.MergedLength, this.config.ClipperScale));
         }
         else
         {
-          VerboseLog($"Something's gone wrong; break out of nest.");
+          this.VerboseLog($"Something's gone wrong; break out of nest.");
           break; // something went wrong
         }
       }
 
-      VerboseLog($"Nest complete in {sw.ElapsedMilliseconds}");
-      var result = new NestResult(gene.Length, allPlacements, unplacedParts, config.PlacementType, sw.ElapsedMilliseconds, backgroundStopwatch.ElapsedMilliseconds);
+      this.VerboseLog($"Nest complete in {this.sw.ElapsedMilliseconds}");
+      NestResult result = new NestResult(this.gene.Length, this.allPlacements, this.unplacedParts, this.config.PlacementType, this.sw.ElapsedMilliseconds, this.backgroundStopwatch.ElapsedMilliseconds);
 #if NCRUNCH || DEBUG
       if (!result.IsValid)
       {
@@ -134,21 +128,21 @@
     /// <param name="isPriorityPlacement">A flag that indicates that the current nest was priority.</param>
     private void RequeueSheets(ISheet sheet, Queue<ISheet> requeue, bool isPriorityPlacement)
     {
-      VerboseLog("All parts processed for current sheet.");
-      if (isPriorityPlacement && unplacedParts.Count > 0)
+      this.VerboseLog("All parts processed for current sheet.");
+      if (isPriorityPlacement && this.unplacedParts.Count > 0)
       {
-        VerboseLog($"Requeue {sheet.ToShortString()} for reuse.");
-        unusedSheets.Push(sheet);
+        this.VerboseLog($"Requeue {sheet.ToShortString()} for reuse.");
+        this.unusedSheets.Push(sheet);
       }
       else
       {
-        VerboseLog($"No need to requeue {sheet.ToShortString()}.");
+        this.VerboseLog($"No need to requeue {sheet.ToShortString()}.");
       }
 
       while (requeue.Count > 0)
       {
-        VerboseLog($"Reinstate {sheet.ToShortString()} for reuse.");
-        unusedSheets.Push(requeue.Dequeue());
+        this.VerboseLog($"Reinstate {sheet.ToShortString()} for reuse.");
+        this.unusedSheets.Push(requeue.Dequeue());
       }
     }
 
@@ -164,11 +158,11 @@
         }
 #if NCRUNCH || DEBUG
         position.Part.MustBe(processedPart);
-        (this.allPlacements.TotalPartsPlaced + placements.Count).MustBeLessThanOrEqualTo(gene.Length);
+        (this.allPlacements.TotalPartsPlaced + placements.Count).MustBeLessThanOrEqualTo(this.gene.Length);
 #endif
         this.VerboseLog($"Placed part {processedPart}");
         placements.Add(position);
-        var sp = new SheetPlacement(placementType, sheet, originalSheet, placements, mergedLength, config.ClipperScale);
+        SheetPlacement sp = new SheetPlacement(placementType, sheet, originalSheet, placements, mergedLength, this.config.ClipperScale);
         if (double.IsNaN(sp.Fitness.Evaluate()))
         {
           // Step back to calling method in PartPlacementWorker and you should find a PartPlacementWorker.ToJson() :)
@@ -198,15 +192,15 @@
       ISheet localOriginalSheet = null;
       partPlacements = null;
       requeue = new Queue<ISheet>();
-      while (unusedSheets.Count > 0 && localSheet == null)
+      while (this.unusedSheets.Count > 0 && localSheet == null)
       {
-        localSheet = unusedSheets.Pop();
+        localSheet = this.unusedSheets.Pop();
         localOriginalSheet = this.unusedOriginalSheets.Pop();
-        if (allPlacements.Any(o => o.Sheet == localSheet))
+        if (this.allPlacements.Any(o => o.Sheet == localSheet))
         {
-          var sheetPlacement = allPlacements.Single(o => o.Sheet == localSheet);
+          ISheetPlacement sheetPlacement = this.allPlacements.Single(o => o.Sheet == localSheet);
           partPlacements = sheetPlacement.PartPlacements.ToList();
-          if (config.UsePriority && unplacedParts.Any(o => o.IsPriority))
+          if (this.config.UsePriority && this.unplacedParts.Any(o => o.IsPriority))
           {
             // Sheet's already used so by definition it's already full of priority parts, no point trying to add more
             requeue.Enqueue(localSheet);
@@ -215,8 +209,8 @@
           }
           else
           {
-            VerboseLog($"Using sheet {localSheet.Id}:{localSheet.Source} because although it's already used for {partPlacements.Count()} priority parts there's no priority parts left so try fill spaces with non-priority:");
-            allPlacements.Remove(sheetPlacement);
+            this.VerboseLog($"Using sheet {localSheet.Id}:{localSheet.Source} because although it's already used for {partPlacements.Count()} priority parts there's no priority parts left so try fill spaces with non-priority:");
+            this.allPlacements.Remove(sheetPlacement);
             sheet = localSheet;
             originalSheet = localOriginalSheet;
             return true;
@@ -224,7 +218,7 @@
         }
         else
         {
-          VerboseLog($"Using sheet {localSheet.ToShortString()} because it's a new sheet so just go ahead and use it for whatever's left:");
+          this.VerboseLog($"Using sheet {localSheet.ToShortString()} because it's a new sheet so just go ahead and use it for whatever's left:");
           partPlacements = new List<IPartPlacement>();
           sheet = localSheet;
           originalSheet = localOriginalSheet;
@@ -240,36 +234,36 @@
 
     private void Initialise()
     {
-      StartTimer();
-      PrepUsedSheets();
-      PrepUnplacedParts();
+      this.StartTimer();
+      this.PrepUsedSheets();
+      this.PrepUnplacedParts();
     }
 
     private void StartTimer()
     {
       this.sw = new Stopwatch();
-      sw.Start();
+      this.sw.Start();
     }
 
     private void PrepUsedSheets()
     {
-      this.unusedSheets = new Stack<ISheet>(sheets.Reverse());
+      this.unusedSheets = new Stack<ISheet>(this.sheets.Reverse());
       this.unusedOriginalSheets = new Stack<ISheet>(this.originalSheets.Reverse());
     }
 
     private void PrepUnplacedParts()
     {
       // rotate paths by given rotation
-      unplacedParts = new List<INfp>();
-      for (int i = 0; i < gene.Length; i++)
+      this.unplacedParts = new List<INfp>();
+      for (int i = 0; i < this.gene.Length; i++)
       {
-        unplacedParts.Add(gene[i].Part.Rotate(gene[i].Rotation));
+        this.unplacedParts.Add(this.gene[i].Part.Rotate(this.gene[i].Rotation));
       }
     }
 
     void IPlacementWorker.VerboseLog(string message)
     {
-      VerboseLog(message);
+      this.VerboseLog(message);
     }
 
     private void VerboseLog(string message)

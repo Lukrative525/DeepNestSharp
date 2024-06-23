@@ -13,7 +13,7 @@
       progressDisplayer.IsVisibleSecondaryProgressBar = false;
       context.Reset();
       int src = 0;
-      foreach (var item in sheetLoadInfos)
+      foreach (ISheetLoadInfo item in sheetLoadInfos)
       {
         src = context.GetNextSheetSource();
         if (item.SheetType == SheetTypeEnum.Arbitrary)
@@ -47,12 +47,12 @@
 
       context.ReorderSheets();
       src = 0;
-      foreach (var item in detailLoadInfos.Where(o => o.IsIncluded))
+      foreach (IDetailLoadInfo item in detailLoadInfos.Where(o => o.IsIncluded))
       {
         progressDisplayer.DisplayTransientMessage($"Preload {item.Path}...");
-        var det = LoadRawDetail(new FileInfo(item.Path));
+        IRawDetail det = this.LoadRawDetail(new FileInfo(item.Path));
 
-        AddToPolygons(context, src, det, item.Quantity, progressDisplayer, isPriority: item.IsPriority, isMultiplied: item.IsMultiplied, strictAngles: item.StrictAngle);
+        this.AddToPolygons(context, src, det, item.Quantity, progressDisplayer, isPriority: item.IsPriority, isMultiplied: item.IsMultiplied, strictAngles: item.StrictAngle);
 
         src++;
       }
@@ -62,8 +62,8 @@
 
     public void AddToPolygons(NestingContext context, int src, IRawDetail det, int quantity, IProgressDisplayer progressDisplayer, bool isIncluded = true, bool isPriority = false, bool isMultiplied = false, AnglesEnum strictAngles = AnglesEnum.AsPreviewed)
     {
-      var item = new DetailLoadInfo() { Quantity = quantity, IsIncluded = isIncluded, IsPriority = isPriority, IsMultiplied = isMultiplied, StrictAngle = strictAngles };
-      AddToPolygons(context, src, det, item, progressDisplayer);
+      DetailLoadInfo item = new DetailLoadInfo() { Quantity = quantity, IsIncluded = isIncluded, IsPriority = isPriority, IsMultiplied = isMultiplied, StrictAngle = strictAngles };
+      this.AddToPolygons(context, src, det, item, progressDisplayer);
     }
 
     public void AddToPolygons(NestingContext context, int src, IRawDetail det, DetailLoadInfo item, IProgressDisplayer progressDisplayer)

@@ -70,7 +70,7 @@
 
     public override string ToJson(bool writeIndented = false)
     {
-      var options = new JsonSerializerOptions();
+      JsonSerializerOptions options = new JsonSerializerOptions();
       options.WriteIndented = writeIndented;
       return JsonSerializer.Serialize(this, options);
     }

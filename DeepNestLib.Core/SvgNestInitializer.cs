@@ -14,9 +14,9 @@
       SetPolygonIds(parts);
       SetSheetIds(sheets);
       SetSheetIds(originalSheets);
-      var clonedPolygons = ClonePolygons(parts);
-      var clonedSheets = CloneSheets(sheets);
-      var clonedOriginalSheets = CloneSheets(originalSheets);
+      IList<INfp> clonedPolygons = ClonePolygons(parts);
+      List<ISheet> clonedSheets = CloneSheets(sheets);
+      List<ISheet> clonedOriginalSheets = CloneSheets(originalSheets);
 
       if (config.OffsetTreePhase)
       {
@@ -39,12 +39,12 @@
     private static void SetIncrementingSource(IEnumerable<NestItem<INfp>> partsLocal, IEnumerable<NestItem<ISheet>> sheetsLocal, IEnumerable<NestItem<ISheet>> originalSheetsLocal)
     {
       int srcc = 0;
-      foreach (var item in partsLocal)
+      foreach (NestItem<INfp> item in partsLocal)
       {
         item.Polygon.Source = srcc++;
       }
 
-      foreach (var item in sheetsLocal)
+      foreach (NestItem<ISheet> item in sheetsLocal)
       {
         item.Polygon.Source = srcc++;
       }
@@ -57,30 +57,30 @@
 
     private static List<NestItem<ISheet>> GroupToNestItemList(List<ISheet> clonedSheets)
     {
-      var p2 = clonedSheets.GroupBy(z => z.Source).Select(z => new NestItem<ISheet>()
+      IEnumerable<NestItem<ISheet>> p2 = clonedSheets.GroupBy(z => z.Source).Select(z => new NestItem<ISheet>()
       {
         Polygon = z.First(),
         Quantity = z.Count(),
       });
 
-      var sheetsLocal = new List<NestItem<ISheet>>(p2);
+      List<NestItem<ISheet>> sheetsLocal = new List<NestItem<ISheet>>(p2);
       return sheetsLocal;
     }
 
     private static List<NestItem<INfp>> GroupToNestItemList(IList<INfp> clonedPolygons)
     {
-      var p1 = clonedPolygons.GroupBy(z => z.Source).Select(z => new NestItem<INfp>()
+      IEnumerable<NestItem<INfp>> p1 = clonedPolygons.GroupBy(z => z.Source).Select(z => new NestItem<INfp>()
       {
         Polygon = z.First(),
         Quantity = z.Count(),
       });
-      var partsLocal = new List<NestItem<INfp>>(p1);
+      List<NestItem<INfp>> partsLocal = new List<NestItem<INfp>>(p1);
       return partsLocal;
     }
 
     private static async Task ExecuteOffsetTreePhase(ISvgNestConfig config, IList<INfp> clonedPolygons, List<ISheet> clonedSheets, IProgressDisplayer progressDisplayer)
     {
-      var grps = clonedPolygons.GroupBy(z => z.Source).ToArray();
+      IGrouping<int, INfp>[] grps = clonedPolygons.GroupBy(z => z.Source).ToArray();
       progressDisplayer.InitialiseLoopProgress(ProgressBar.Primary, "Pre-processing (Offset Tree Phase)...", grps.Length);
       if (config.UseParallel)
       {
@@ -93,7 +93,7 @@
       else
       {
         var idx = 0;
-        foreach (var item in grps)
+        foreach (IGrouping<int, INfp> item in grps)
         {
           OffsetTreeReplace(config, item);
           await progressDisplayer.IncrementLoopProgress(ProgressBar.Primary).ConfigureAwait(false);
@@ -102,7 +102,7 @@
         }
       }
 
-      foreach (var item in clonedSheets)
+      foreach (ISheet item in clonedSheets)
       {
         var offset = (config.Spacing / 2) - config.SheetSpacing;
         INfp sheet = item;
@@ -116,19 +116,19 @@
     /// <returns>A cloned set of sheets so the original won't get modified.</returns>
     private static List<ISheet> CloneSheets(IList<ISheet> sheets)
     {
-      var lsheets = new List<ISheet>();
-      foreach (var item in sheets)
+      List<ISheet> lsheets = new List<ISheet>();
+      foreach (ISheet item in sheets)
       {
-        var clone = new Sheet();
+        Sheet clone = new Sheet();
         clone.Id = item.Id;
         clone.Source = item.Source;
         clone.ReplacePoints(item.Points.Select(z => new SvgPoint(z.X, z.Y) { Exact = z.Exact }));
         if (item.Children != null)
         {
-          foreach (var citem in item.Children)
+          foreach (INfp citem in item.Children)
           {
             clone.Children.Add(new NoFitPolygon());
-            var l = clone.Children.Last();
+            INfp l = clone.Children.Last();
             l.Id = citem.Id;
             l.Source = citem.Source;
             l.ReplacePoints(citem.Points.Select(z => new SvgPoint(z.X, z.Y) { Exact = z.Exact }));
@@ -147,10 +147,10 @@
     /// <returns>A cloned set of polygons to nest so the original won't get modified.</returns>
     private static IList<INfp> ClonePolygons(ICollection<INfp> parts)
     {
-      var result = new List<INfp>();
-      foreach (var item in parts)
+      List<INfp> result = new List<INfp>();
+      foreach (INfp item in parts)
       {
-        var clone = item.CloneExact();
+        INfp clone = item.CloneExact();
         result.Add(clone);
       }
 
@@ -174,7 +174,7 @@
     private static void SetPolygonIds(ICollection<INfp> parts)
     {
       int id = 0;
-      foreach (var item in parts)
+      foreach (INfp item in parts)
       {
         item.Id = id;
         id++;
@@ -189,9 +189,9 @@
     /// <param name="item">The item that will be modified.</param>
     private static void OffsetTreeReplace(ISvgNestConfig config, IGrouping<int, INfp> item)
     {
-      var target = item.First();
+      INfp target = item.First();
       SvgNest.OffsetTree(ref target, 0.5 * config.Spacing, config);
-      foreach (var zitem in item)
+      foreach (INfp zitem in item)
       {
         zitem.ReplacePoints(item.First().Points);
       }

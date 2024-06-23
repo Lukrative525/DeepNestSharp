@@ -14,8 +14,8 @@
         if ((value == null && getProp() != null) || (value != null && !value.Equals(getProp())))
         {
           setProp(value);
-          OnPropertyChanged(propertyName);
-          OnPropertyChanged("IsDirty");
+          this.OnPropertyChanged(propertyName);
+          this.OnPropertyChanged("IsDirty");
         }
       }
       catch (Exception ex)

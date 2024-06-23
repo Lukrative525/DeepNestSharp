@@ -43,18 +43,18 @@
 
     public int SelectedIndex
     {
-      get => (int)GetValue(SelectedIndexProperty);
+      get => (int)this.GetValue(SelectedIndexProperty);
       set
       {
-        SetValue(SelectedIndexProperty, value);
+        this.SetValue(SelectedIndexProperty, value);
         System.Diagnostics.Debug.Print($"Set SelectedIndex to {value}");
       }
     }
 
     public IPartPlacement SelectedItem
     {
-      get => (IPartPlacement)GetValue(SelectedItemProperty);
-      set => SetValue(SelectedItemProperty, value);
+      get => (IPartPlacement)this.GetValue(SelectedItemProperty);
+      set => this.SetValue(SelectedItemProperty, value);
     }
 
     public IReadOnlyList<IPartPlacement> ItemsSource

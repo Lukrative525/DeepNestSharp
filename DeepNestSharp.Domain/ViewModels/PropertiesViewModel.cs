@@ -31,36 +31,36 @@
 
       set
       {
-        SetProperty(ref selectedObject, value, nameof(SelectedObject));
+        this.SetProperty(ref this.selectedObject, value, nameof(this.SelectedObject));
       }
     }
 
     private void MainViewModel_ActiveDocumentChanged(object sender, System.EventArgs e)
     {
-      if (lastSheetPlacementViewModel != null)
+      if (this.lastSheetPlacementViewModel != null)
       {
-        lastSheetPlacementViewModel.PropertyChanged -= this.LastSheetPlacementViewModel_PropertyChanged;
-        lastSheetPlacementViewModel = null;
+        this.lastSheetPlacementViewModel.PropertyChanged -= this.LastSheetPlacementViewModel_PropertyChanged;
+        this.lastSheetPlacementViewModel = null;
       }
 
       if (sender is IMainViewModel mainViewModel)
       {
-        SelectedObject = null;
+        this.SelectedObject = null;
 
         if (mainViewModel.ActiveDocument is ISheetPlacementViewModel sheetPlacementViewModel &&
             sheetPlacementViewModel.SheetPlacement is ObservableSheetPlacement sheetPlacement)
         {
-          lastSheetPlacementViewModel = sheetPlacementViewModel;
-          lastSheetPlacementViewModel.PropertyChanged += this.LastSheetPlacementViewModel_PropertyChanged;
-          sheetPlacementViewModel.PropertyChanged += SheetPlacementViewModel_PropertyChanged;
-          Set(sheetPlacementViewModel);
+          this.lastSheetPlacementViewModel = sheetPlacementViewModel;
+          this.lastSheetPlacementViewModel.PropertyChanged += this.LastSheetPlacementViewModel_PropertyChanged;
+          sheetPlacementViewModel.PropertyChanged += this.SheetPlacementViewModel_PropertyChanged;
+          this.Set(sheetPlacementViewModel);
         }
         else if (mainViewModel.ActiveDocument is INestProjectViewModel nestProjectViewModel)
         {
-          nestProjectViewModel.PropertyChanged += NestProjectViewModel_PropertyChanged;
+          nestProjectViewModel.PropertyChanged += this.NestProjectViewModel_PropertyChanged;
           if (nestProjectViewModel.SelectedDetailLoadInfo is ObservableDetailLoadInfo detailLoadInfo)
           {
-            SelectedObject = detailLoadInfo;
+            this.SelectedObject = detailLoadInfo;
           }
         }
       }
@@ -68,12 +68,12 @@
 
     private void LastSheetPlacementViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-      if (sender == mainViewModel.ActiveDocument &&
+      if (sender == this.mainViewModel.ActiveDocument &&
           e.PropertyName == "SelectedItem" &&
           sender is ISheetPlacementViewModel sheetPlacementViewModel &&
           sheetPlacementViewModel.SheetPlacement is ObservableSheetPlacement sheetPlacement)
       {
-        Set(sheetPlacementViewModel);
+        this.Set(sheetPlacementViewModel);
       }
     }
 
@@ -100,22 +100,22 @@
     {
       if (sheetPlacementViewModel.SelectedItem == null)
       {
-        SelectedObject = sheetPlacementViewModel.SheetPlacement;
+        this.SelectedObject = sheetPlacementViewModel.SheetPlacement;
       }
       else
       {
-        SelectedObject = sheetPlacementViewModel.SelectedItem;
+        this.SelectedObject = sheetPlacementViewModel.SelectedItem;
       }
     }
 
     private void SheetPlacementViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-      if (sender == mainViewModel.ActiveDocument &&
+      if (sender == this.mainViewModel.ActiveDocument &&
           e.PropertyName == "SelectedItem" &&
           sender is ISheetPlacementViewModel sheetPlacementViewModel &&
           sheetPlacementViewModel.SheetPlacement is ObservableSheetPlacement sheetPlacement)
       {
-        Set(sheetPlacementViewModel);
+        this.Set(sheetPlacementViewModel);
       }
     }
   }

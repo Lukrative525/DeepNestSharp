@@ -9,7 +9,7 @@
   {
     public PropertiesEditor()
     {
-      InitializeComponent();
+      this.InitializeComponent();
     }
   }
 }
