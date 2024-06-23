@@ -124,7 +124,7 @@
     </ListView>
     <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Stretch">
       <Button Content=" Add Arbitrary Sheet " Command="{Binding AddArbitrarySheetCommand}" Margin="1,5,1,5" />
-      <Button Content=" Add Rectangle Sheet " Command="{Binding AddSheetCommand}" Margin="1,5,1,5" />
+      <Button Content=" Add Rectangle Sheet " Command="{Binding AddRectangleSheetCommand}" Margin="1,5,1,5" />
     </StackPanel>
     <ListView Grid.Row="3" 
               ItemsSource="{Binding Path=ProjectInfo.SheetLoadInfos}" 

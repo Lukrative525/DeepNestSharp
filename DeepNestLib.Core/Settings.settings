@@ -20,10 +20,10 @@
     <Setting Name="SaveAsFileTypeIndex" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1</Value>
     </Setting>
-    <Setting Name="SheetWidth" Type="System.Int32" Scope="User">
+    <Setting Name="SheetWidth" Type="System.Double" Scope="User">
       <Value Profile="(Default)">3000</Value>
     </Setting>
-    <Setting Name="SheetHeight" Type="System.Int32" Scope="User">
+    <Setting Name="SheetHeight" Type="System.Double" Scope="User">
       <Value Profile="(Default)">1500</Value>
     </Setting>
     <Setting Name="SheetQuantity" Type="System.Int32" Scope="User">

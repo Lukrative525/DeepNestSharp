@@ -6,14 +6,17 @@
 
   public class SvgNestInitializer
   {
-    public static (NestItem<INfp>[] PartsLocal, List<NestItem<ISheet>> SheetsLocal) BuildNestItems(ISvgNestConfig config, ICollection<INfp> parts, IList<ISheet> sheets, IProgressDisplayer progressDisplayer)
+    public static (NestItem<INfp>[] PartsLocal, List<NestItem<ISheet>> SheetsLocal, List<NestItem<ISheet>> OriginalSheetsLocal) BuildNestItems(ISvgNestConfig config, ICollection<INfp> parts, IList<ISheet> sheets, IList<ISheet> originalSheets, IProgressDisplayer progressDisplayer)
     {
       List<NestItem<INfp>> partsLocal;
       List<NestItem<ISheet>> sheetsLocal;
+      List<NestItem<ISheet>> originalSheetsLocal;
       SetPolygonIds(parts);
       SetSheetIds(sheets);
+      SetSheetIds(originalSheets);
       var clonedPolygons = ClonePolygons(parts);
       var clonedSheets = CloneSheets(sheets);
+      var clonedOriginalSheets = CloneSheets(originalSheets);
 
       if (config.OffsetTreePhase)
       {
@@ -22,9 +25,10 @@
 
       partsLocal = GroupToNestItemList(clonedPolygons);
       sheetsLocal = GroupToNestItemList(clonedSheets);
-      SetIncrementingSource(partsLocal, sheetsLocal);
+      originalSheetsLocal = GroupToNestItemList(clonedOriginalSheets);
+      SetIncrementingSource(partsLocal, sheetsLocal, originalSheetsLocal);
 
-      return (partsLocal.ToArray(), sheetsLocal);
+      return (partsLocal.ToArray(), sheetsLocal, originalSheetsLocal);
     }
 
     /// <summary>
@@ -32,7 +36,7 @@
     /// </summary>
     /// <param name="partsLocal">NestItem list of parts to index.</param>
     /// <param name="sheetsLocal">NestItem list of sheets to index.</param>
-    private static void SetIncrementingSource(IEnumerable<NestItem<INfp>> partsLocal, IEnumerable<NestItem<ISheet>> sheetsLocal)
+    private static void SetIncrementingSource(IEnumerable<NestItem<INfp>> partsLocal, IEnumerable<NestItem<ISheet>> sheetsLocal, IEnumerable<NestItem<ISheet>> originalSheetsLocal)
     {
       int srcc = 0;
       foreach (var item in partsLocal)
@@ -41,6 +45,11 @@
       }
 
       foreach (var item in sheetsLocal)
+      {
+        item.Polygon.Source = srcc++;
+      }
+
+      foreach (NestItem<ISheet> item in originalSheetsLocal)
       {
         item.Polygon.Source = srcc++;
       }
@@ -95,9 +104,9 @@
 
       foreach (var item in clonedSheets)
       {
-        var gap = config.SheetSpacing - (config.Spacing / 2);
+        var offset = (config.Spacing / 2) - config.SheetSpacing;
         INfp sheet = item;
-        SvgNest.OffsetTree(ref sheet, -gap, config, true);
+        SvgNest.OffsetTree(ref sheet, offset, config, true);
       }
     }
 

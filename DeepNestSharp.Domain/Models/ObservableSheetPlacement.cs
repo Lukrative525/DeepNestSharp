@@ -94,6 +94,8 @@
 
     public ISheet Sheet => sheetPlacement?.Sheet;
 
+    public ISheet OriginalSheet => sheetPlacement?.OriginalSheet;
+
     public int SheetId => sheetPlacement.SheetId;
 
     public int SheetSource => sheetPlacement.SheetSource;

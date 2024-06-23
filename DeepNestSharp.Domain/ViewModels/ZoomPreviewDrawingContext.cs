@@ -25,8 +25,8 @@
     public IZoomPreviewDrawingContext For(ObservableSheetPlacement sheetPlacement)
     {
       this.Clear();
-      this.Width = sheetPlacement.Sheet.WidthCalculated;
-      this.Height = sheetPlacement.Sheet.HeightCalculated;
+      this.Width = sheetPlacement.OriginalSheet.WidthCalculated;
+      this.Height = sheetPlacement.OriginalSheet.HeightCalculated;
       this.Add(sheetPlacement);
       foreach (var partPlacement in sheetPlacement.PartPlacements)
       {

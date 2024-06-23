@@ -16,11 +16,32 @@
       foreach (var item in sheetLoadInfos)
       {
         src = context.GetNextSheetSource();
-        for (int i = 0; i < item.Quantity; i++)
+        if (item.SheetType == SheetTypeEnum.Arbitrary)
         {
-          var ns = Sheet.NewSheet(context.Sheets.Count + 1, item.Width, item.Height);
-          context.Sheets.Add(ns);
-          ns.Source = src;
+          IRawDetail det = this.LoadRawDetail(new FileInfo(item.Path));
+          INfp loadedNfp;
+          if (det.TryConvertToNfp(src, out loadedNfp))
+          {
+            for (int i = 0; i < item.Quantity; i++)
+            {
+              Sheet ns = Sheet.NewSheet(context.Sheets.Count + 1, loadedNfp);
+              context.Sheets.Add(ns); // These are the unmodified sheets! remove before flight
+              ns.Source = src;
+            }
+          }
+          else
+          {
+            progressDisplayer.DisplayMessageBox($"Failed to import {det.Name}.", "Load Error", MessageBoxIcon.Stop);
+          }
+        }
+        else
+        {
+          for (int i = 0; i < item.Quantity; i++)
+          {
+            Sheet ns = Sheet.NewSheet(context.Sheets.Count + 1, item.Width, item.Height);
+            context.Sheets.Add(ns); // These are the unmodified sheets! remove before flight
+            ns.Source = src;
+          }
         }
       }
 

@@ -20,7 +20,8 @@
     private ISheetLoadInfo selectedSheetLoadInfo;
     private AsyncRelayCommand executeNestCommand;
     private AsyncRelayCommand addPartCommand;
-    private RelayCommand addSheetCommand;
+    private AsyncRelayCommand addArbitrarySheetCommand;
+    private RelayCommand addRectangleSheetCommand;
     private RelayCommand clearPartsCommand;
     private RelayCommand<IDetailLoadInfo> removePartCommand;
     private RelayCommand<ISheetLoadInfo> removeSheetCommand;
@@ -51,25 +52,17 @@
 
     public IAsyncRelayCommand AddPartCommand => addPartCommand ?? (addPartCommand = new AsyncRelayCommand(OnAddPartAsync));
 
-    public IRelayCommand AddSheetCommand => addSheetCommand ?? (addSheetCommand = new RelayCommand(OnAddSheet));
+    public IAsyncRelayCommand AddArbitrarySheetCommand => this.addArbitrarySheetCommand ?? (this.addArbitrarySheetCommand = new AsyncRelayCommand(this.OnAddArbitrarySheetAsync));
 
     public IRelayCommand ClearPartsCommand => clearPartsCommand ?? (clearPartsCommand = new RelayCommand(OnClearParts));
+
+    public IRelayCommand AddRectangleSheetCommand => this.addRectangleSheetCommand ?? (this.addRectangleSheetCommand = new RelayCommand(this.OnAddRectangleSheet));
 
     public IRelayCommand<IDetailLoadInfo> RemovePartCommand => removePartCommand ?? (removePartCommand = new RelayCommand<IDetailLoadInfo>(OnRemovePart));
 
     public IRelayCommand<ISheetLoadInfo> RemoveSheetCommand => removeSheetCommand ?? (removeSheetCommand = new RelayCommand<ISheetLoadInfo>(OnRemoveSheet));
 
-    public AsyncRelayCommand ExecuteNestCommand => this.executeNestCommand ?? (this.executeNestCommand = new AsyncRelayCommand(this.OnExecuteNest, CanExecuteNest));
-
-    private bool CanExecuteNest()
-    {
-      if (MainViewModel.NestMonitorViewModel.IsRunning || this.ProjectInfo.DetailLoadInfos.Count == 0)
-      {
-        return false;
-      }
-
-      return !this.ProjectInfo.DetailLoadInfos.Any(o => o is ObservableDetailLoadInfo cast && !cast.IsValid);
-    }
+    public AsyncRelayCommand ExecuteNestCommand => this.executeNestCommand ?? (this.executeNestCommand = new AsyncRelayCommand(this.OnExecuteNest, this.CanExecuteNest));
 
     public override string FileDialogFilter => DeepNestLib.NestProject.ProjectInfo.FileDialogFilter;
 
@@ -118,9 +111,26 @@
 
     protected override void NotifyContentUpdated()
     {
-      Contextualise();
-      OnPropertyChanged(nameof(SelectedDetailLoadInfoIndex));
-      OnPropertyChanged(nameof(SelectedDetailLoadInfo));
+      this.Contextualise();
+      this.OnPropertyChanged(nameof(this.SelectedDetailLoadInfoIndex));
+      this.OnPropertyChanged(nameof(this.SelectedDetailLoadInfo));
+      this.OnPropertyChanged(nameof(this.SelectedSheetLoadInfoIndex));
+      this.OnPropertyChanged(nameof(this.SelectedSheetLoadInfo));
+    }
+
+    protected override void SaveState()
+    {
+      this.observableProjectInfo.SaveState();
+    }
+
+    private bool CanExecuteNest()
+    {
+      if (this.MainViewModel.NestMonitorViewModel.IsRunning || this.ProjectInfo.DetailLoadInfos.Count == 0)
+      {
+        return false;
+      }
+
+      return !this.ProjectInfo.DetailLoadInfos.Any(o => o is ObservableDetailLoadInfo cast && !cast.IsValid);
     }
 
     private void Initialise(IMainViewModel mainViewModel, IFileIoService fileIoService)
@@ -173,7 +183,23 @@
       this.IsDirty = true;
     }
 
-    private void OnAddSheet()
+    private async Task OnAddArbitrarySheetAsync()
+    {
+      var filePaths = await this.fileIoService.GetOpenFilePathsAsync(NoFitPolygon.FileDialogFilter);
+      foreach (var filePath in filePaths)
+      {
+        if (!string.IsNullOrWhiteSpace(filePath) && this.fileIoService.Exists(filePath))
+        {
+          SheetLoadInfo newSheet = new SheetLoadInfo(filePath, this.ProjectInfo.Config.SheetQuantity);
+          this.observableProjectInfo?.SheetLoadInfos.Add(newSheet);
+        }
+      }
+
+      this.Contextualise();
+      this.IsDirty = true;
+    }
+
+    private void OnAddRectangleSheet()
     {
       var newSheet = new SheetLoadInfo(this.ProjectInfo.Config);
       observableProjectInfo?.SheetLoadInfos.Add(newSheet);
@@ -225,11 +251,6 @@
         this.ProjectInfo.SheetLoadInfos.Remove(arg);
         Contextualise();
       }
-    }
-
-    protected override void SaveState()
-    {
-      observableProjectInfo.SaveState();
     }
   }
 }

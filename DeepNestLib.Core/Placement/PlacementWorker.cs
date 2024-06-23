@@ -18,12 +18,14 @@
     private readonly SheetPlacementCollection allPlacements = new SheetPlacementCollection();
     private readonly NfpHelper nfpHelper;
     private readonly IEnumerable<ISheet> sheets;
+    private readonly IEnumerable<ISheet> originalSheets;
     private readonly DeepNestGene gene;
     private readonly IPlacementConfig config;
     private readonly Stopwatch backgroundStopwatch;
     private readonly INestState state;
     private Stopwatch sw;
     private Stack<ISheet> unusedSheets;
+    private Stack<ISheet> unusedOriginalSheets;
     private List<INfp> unplacedParts;
     private PartPlacementWorker lastPartPlacementWorker;
 
@@ -32,13 +34,15 @@
     /// </summary>
     /// <param name="nfpHelper">NfpHelper provides access to the Nfp cache generated in the PMap stage and this will add to it, potentially.</param>
     /// <param name="sheets">The list of sheets upon which to place parts.</param>
+    /// <param name="originalSheets">The list of un-offset sheets corresponding with sheets.</param>
     /// <param name="gene">The list of parts to be placed.</param>
     /// <param name="config">Config for the Nest.</param>
     /// <param name="backgroundStopwatch">Stopwatch started at Background.Start (included the PMap stage prior to the PlacementWorker).</param>
-    public PlacementWorker(NfpHelper nfpHelper, IEnumerable<ISheet> sheets, DeepNestGene gene, IPlacementConfig config, Stopwatch backgroundStopwatch, INestState state)
+    public PlacementWorker(NfpHelper nfpHelper, IEnumerable<ISheet> sheets, IEnumerable<ISheet> originalSheets, DeepNestGene gene, IPlacementConfig config, Stopwatch backgroundStopwatch, INestState state)
     {
       this.nfpHelper = nfpHelper;
       this.sheets = sheets;
+      this.originalSheets = originalSheets;
       this.gene = gene;
       gene.Select(o => o.Part.Id).Distinct().Count().MustBe(gene.Length, message: "Parts must have unique Ids.");
       this.config = config;
@@ -70,9 +74,10 @@
 
       Initialise();
       ISheet sheet;
+      ISheet originalSheet;
       Queue<ISheet> requeue;
       List<IPartPlacement> placements;
-      while (unplacedParts.Count > 0 && TryGetSheet(out sheet, out placements, out requeue))
+      while (unplacedParts.Count > 0 && TryGetSheet(out sheet, out originalSheet, out placements, out requeue))
       {
         var isPriorityPlacement = config.UsePriority && StartedAsPriorityPlacement;
         if (isPriorityPlacement)
@@ -101,7 +106,7 @@
         if (lastPartPlacementWorker.Placements != null && lastPartPlacementWorker.Placements.Count > 0)
         {
           VerboseLog($"Add {config.PlacementType} placement {sheet.ToShortString()}.");
-          allPlacements.Add(new SheetPlacement(config.PlacementType, sheet, lastPartPlacementWorker.Placements, lastPartPlacementWorker.MergedLength, config.ClipperScale));
+          allPlacements.Add(new SheetPlacement(config.PlacementType, sheet, originalSheet, lastPartPlacementWorker.Placements, lastPartPlacementWorker.MergedLength, config.ClipperScale));
         }
         else
         {
@@ -147,7 +152,7 @@
       }
     }
 
-    SheetPlacement IPlacementWorker.AddPlacement(INfp inputPart, List<IPartPlacement> placements, INfp processedPart, PartPlacement position, PlacementTypeEnum placementType, ISheet sheet, double mergedLength)
+    SheetPlacement IPlacementWorker.AddPlacement(INfp inputPart, List<IPartPlacement> placements, INfp processedPart, PartPlacement position, PlacementTypeEnum placementType, ISheet sheet, ISheet originalSheet, double mergedLength)
     {
       try
       {
@@ -163,7 +168,7 @@
 #endif
         this.VerboseLog($"Placed part {processedPart}");
         placements.Add(position);
-        var sp = new SheetPlacement(placementType, sheet, placements, mergedLength, config.ClipperScale);
+        var sp = new SheetPlacement(placementType, sheet, originalSheet, placements, mergedLength, config.ClipperScale);
         if (double.IsNaN(sp.Fitness.Evaluate()))
         {
           // Step back to calling method in PartPlacementWorker and you should find a PartPlacementWorker.ToJson() :)
@@ -183,17 +188,20 @@
     /// Gets the next sheet to populate.
     /// </summary>
     /// <param name="sheet">The next sheet to populate with parts.</param>
+    /// <param name="originalSheet">The un-offset sheet corresponding with sheet.</param>
     /// <param name="partPlacements">Any partPlacements already on the sheet (e.g. priority).</param>
     /// <param name="requeue">Already used sheets that already cannot accept more parts at this time (e.g. priority).</param>
     /// <returns>.t if a sheet was available.</returns>
-    private bool TryGetSheet(out ISheet sheet, out List<IPartPlacement> partPlacements, out Queue<ISheet> requeue)
+    private bool TryGetSheet(out ISheet sheet, out ISheet originalSheet, out List<IPartPlacement> partPlacements, out Queue<ISheet> requeue)
     {
       ISheet localSheet = null;
+      ISheet localOriginalSheet = null;
       partPlacements = null;
       requeue = new Queue<ISheet>();
       while (unusedSheets.Count > 0 && localSheet == null)
       {
         localSheet = unusedSheets.Pop();
+        localOriginalSheet = this.unusedOriginalSheets.Pop();
         if (allPlacements.Any(o => o.Sheet == localSheet))
         {
           var sheetPlacement = allPlacements.Single(o => o.Sheet == localSheet);
@@ -203,12 +211,14 @@
             // Sheet's already used so by definition it's already full of priority parts, no point trying to add more
             requeue.Enqueue(localSheet);
             localSheet = null;
+            localOriginalSheet = null;
           }
           else
           {
             VerboseLog($"Using sheet {localSheet.Id}:{localSheet.Source} because although it's already used for {partPlacements.Count()} priority parts there's no priority parts left so try fill spaces with non-priority:");
             allPlacements.Remove(sheetPlacement);
             sheet = localSheet;
+            originalSheet = localOriginalSheet;
             return true;
           }
         }
@@ -217,12 +227,14 @@
           VerboseLog($"Using sheet {localSheet.ToShortString()} because it's a new sheet so just go ahead and use it for whatever's left:");
           partPlacements = new List<IPartPlacement>();
           sheet = localSheet;
+          originalSheet = localOriginalSheet;
           return true;
         }
       }
 
       partPlacements = null;
       sheet = null;
+      originalSheet = null;
       return false;
     }
 
@@ -242,6 +254,7 @@
     private void PrepUsedSheets()
     {
       this.unusedSheets = new Stack<ISheet>(sheets.Reverse());
+      this.unusedOriginalSheets = new Stack<ISheet>(this.originalSheets.Reverse());
     }
 
     private void PrepUnplacedParts()

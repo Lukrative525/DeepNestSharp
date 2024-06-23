@@ -55,10 +55,10 @@
       this.InternalReset();
       this.Current = null;
 
-      (NestItem<INfp>[] PartsLocal, List<NestItem<ISheet>> SheetsLocal) nestItems = await Task.Run(
+      (NestItem<INfp>[] PartsLocal, List<NestItem<ISheet>> SheetsLocal, List<NestItem<ISheet>> OriginalSheetsLocal) nestItems = await Task.Run(
         () =>
         {
-          return SvgNestInitializer.BuildNestItems(config, this.Polygons, this.Sheets, progressDisplayer);
+          return SvgNestInitializer.BuildNestItems(this.config, this.Polygons, this.Sheets, this.Sheets, this.progressDisplayer);
         }).ConfigureAwait(false);
 
       this.Nest = new SvgNest(
@@ -194,13 +194,11 @@
 
     public void LoadSampleData()
     {
-      Console.WriteLine("Adding sheets..");
       for (int i = 0; i < 5; i++)
       {
         AddSheet(3000, 1500, 0);
       }
 
-      Console.WriteLine("Adding parts..");
       int src1 = GetNextSource();
       for (int i = 0; i < 200; i++)
       {

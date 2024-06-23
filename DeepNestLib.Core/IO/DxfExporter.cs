@@ -16,7 +16,7 @@
 
     public async Task Export(Stream stream, ISheetPlacement sheetPlacement, bool doMergeLines, bool differentiateChildren)
     {
-      await Export(stream, sheetPlacement.PolygonsForExport, sheetPlacement.Sheet, doMergeLines, differentiateChildren);
+      await Export(stream, sheetPlacement.PolygonsForExport, sheetPlacement.OriginalSheet, doMergeLines, differentiateChildren);
     }
 
     public async Task Export(Stream stream, IEnumerable<INfp> polygons, ISheet sheet, bool doMergeLines, bool differentiateChildren)
@@ -84,17 +84,17 @@
 
       List<DxfVertex> sheetverts = new List<DxfVertex>();
 
-      // Bottom Left Point
-      sheetverts.Add(new DxfVertex(new DxfPoint(0, 0, 0)));
+      // Add the first n - 1 points from the sheet polygon
+      for (var i = 0; i < sheet.Points.Count() - 1; i++)
+      {
+        sheetverts.Add(new DxfVertex(new DxfPoint(sheet.Points[i].X, sheet.Points[i].Y, 0)));
+      }
 
-      // Bottom Right Point
-      sheetverts.Add(new DxfVertex(new DxfPoint(sheet.WidthCalculated, 0, 0)));
-
-      // Top Right Point
-      sheetverts.Add(new DxfVertex(new DxfPoint(sheet.WidthCalculated, sheet.HeightCalculated, 0)));
-
-      // Top Left Point
-      sheetverts.Add(new DxfVertex(new DxfPoint(0, sheet.HeightCalculated, 0)));
+      // If the first and last points are not the same, add the last point from the sheet polygon
+      if (sheet.Points[0].X != sheet.Points.Last().X || sheet.Points[0].Y != sheet.Points.Last().Y)
+      {
+        sheetverts.Add(new DxfVertex(new DxfPoint(sheet.Points.Last().X, sheet.Points.Last().Y, 0)));
+      }
 
       DxfPolyline sheetentity = new DxfPolyline(sheetverts)
       {

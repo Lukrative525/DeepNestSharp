@@ -5,6 +5,7 @@
   using System.Text.Json.Serialization;
   using DeepNestLib;
   using DeepNestLib.IO;
+  using Light.GuardClauses;
 
   public class SheetLoadInfo : Saveable, ISheetLoadInfo
   {
@@ -14,10 +15,41 @@
     }
 
     [JsonConstructor]
-    public SheetLoadInfo(int width, int height, int quantity)
+    public SheetLoadInfo(string path, double width, double height, int quantity)
     {
+      if (path.IsNullOrEmpty())
+      {
+        this.SheetType = SheetTypeEnum.Rectangle;
+        this.Path = null;
+        this.Width = width;
+        this.Height = height;
+        this.Quantity = quantity;
+      }
+      else
+      {
+        this.SheetType = SheetTypeEnum.Arbitrary;
+        this.Path = path;
+        this.Width = 0;
+        this.Height = 0;
+        this.Quantity = quantity;
+      }
+    }
+
+    public SheetLoadInfo(double width, double height, int quantity)
+    {
+      this.SheetType = SheetTypeEnum.Rectangle;
+      this.Path = null;
       this.Width = width;
       this.Height = height;
+      this.Quantity = quantity;
+    }
+
+    public SheetLoadInfo(string path, int quantity)
+    {
+      this.SheetType = SheetTypeEnum.Arbitrary;
+      this.Path = path;
+      this.Width = 0;
+      this.Height = 0;
       this.Quantity = quantity;
     }
 
@@ -26,11 +58,15 @@
     {
     }
 
-    public virtual int Width { get; set; }
+    public virtual double Height { get; set; }
 
-    public virtual int Height { get; set; }
+    public string Path { get; set; }
 
     public virtual int Quantity { get; set; }
+
+    public SheetTypeEnum SheetType { get; }
+
+    public virtual double Width { get; set; }
 
     public override string ToJson(bool writeIndented = false)
     {

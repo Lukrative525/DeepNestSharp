@@ -31,11 +31,20 @@
       return result;
     }
 
-    public static Sheet NewSheet(int nameSuffix, int w = 3000, int h = 1500)
+    public static Sheet NewSheet(int nameSuffix, double w = 3000, double h = 1500)
     {
       var tt = new RectangleSheet();
       tt.Name = "rectSheet" + nameSuffix;
       tt.Build(w, h);
+      return tt;
+    }
+
+    public static Sheet NewSheet(int nameSuffix, INfp nfp)
+    {
+      INfp shiftedNfp = nfp.ShiftToOrigin();
+      ArbitrarySheet tt = new ArbitrarySheet();
+      tt.Name = "arbSheet" + nameSuffix;
+      tt.Build(shiftedNfp);
       return tt;
     }
 

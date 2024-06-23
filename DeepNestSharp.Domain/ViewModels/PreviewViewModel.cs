@@ -358,12 +358,20 @@
         {
           this.ZoomDrawingContext.For(nestResultSheetPlacement);
         }
-        else if (sender is NestProjectViewModel nestProjectViewModel &&
-                 e.PropertyName == nameof(NestProjectViewModel.SelectedDetailLoadInfo) &&
-                 nestProjectViewModel.SelectedDetailLoadInfo is ObservableDetailLoadInfo detailLoadInfo)
+        else if (sender is NestProjectViewModel nestProjectViewModel)
         {
-          Set(detailLoadInfo);
-          this.IsSelected = true;
+          if (e.PropertyName == nameof(NestProjectViewModel.SelectedDetailLoadInfo) &&
+                 nestProjectViewModel.SelectedDetailLoadInfo is ObservableDetailLoadInfo detailLoadInfo)
+          {
+            this.Set(detailLoadInfo);
+            this.IsSelected = true;
+          }
+          else if (e.PropertyName == nameof(NestProjectViewModel.SelectedSheetLoadInfo) &&
+                 nestProjectViewModel.SelectedSheetLoadInfo is ObservableSheetLoadInfo sheetLoadInfo)
+          {
+            this.Set(sheetLoadInfo);
+            this.IsSelected = true;
+          }
         }
         else if (sender is PartEditorViewModel partViewModel &&
                  e.PropertyName == nameof(PartEditorViewModel.Part) &&
@@ -403,7 +411,17 @@
     private void Set(ObservableDetailLoadInfo item)
     {
       var polygon = item.LoadAsync().Result;
-      var shiftedPart = polygon.Shift(-polygon.MinX, -polygon.MinY);
+      var shiftedPart = polygon.ShiftToOrigin();
+      this.ZoomDrawingContext.For(new ObservableNfp(shiftedPart));
+    }
+
+    /// <summary>
+    /// Clear DrawingContext and set for Sheet as a Frame including Point of origin.
+    /// </summary>
+    private void Set(ObservableSheetLoadInfo item)
+    {
+      INfp polygon = item.LoadAsync().Result;
+      INfp shiftedPart = polygon.ShiftToOrigin();
       this.ZoomDrawingContext.For(new ObservableNfp(shiftedPart));
     }
   }

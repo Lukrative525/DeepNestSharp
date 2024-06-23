@@ -79,12 +79,20 @@
 
     private void NestProjectViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-      if (sender == mainViewModel.ActiveDocument &&
-          e.PropertyName == "SelectedDetailLoadInfo" &&
-          sender is INestProjectViewModel nestProjectViewModel &&
-          nestProjectViewModel.SelectedDetailLoadInfo is ObservableDetailLoadInfo detailLoadInfo)
+      if (sender is INestProjectViewModel nestProjectViewModel)
       {
-        SelectedObject = detailLoadInfo;
+        if (sender == this.mainViewModel.ActiveDocument &&
+          e.PropertyName == "SelectedDetailLoadInfo" &&
+          nestProjectViewModel.SelectedDetailLoadInfo is ObservableDetailLoadInfo detailLoadInfo)
+        {
+          this.SelectedObject = detailLoadInfo;
+        }
+        else if (sender == this.mainViewModel.ActiveDocument &&
+            e.PropertyName == "SelectedSheetLoadInfo" &&
+            nestProjectViewModel.SelectedSheetLoadInfo is ObservableSheetLoadInfo sheetLoadInfo)
+        {
+          this.SelectedObject = sheetLoadInfo;
+        }
       }
     }
 

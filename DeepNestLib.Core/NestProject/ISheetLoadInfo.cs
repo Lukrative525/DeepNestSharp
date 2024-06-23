@@ -2,10 +2,14 @@
 {
   public interface ISheetLoadInfo
   {
-    int Height { get; set; }
+    double Height { get; set; }
+
+    string Path { get; set; }
 
     int Quantity { get; set; }
 
-    int Width { get; set; }
+    SheetTypeEnum SheetType { get; }
+
+    double Width { get; set; }
   }
 }
