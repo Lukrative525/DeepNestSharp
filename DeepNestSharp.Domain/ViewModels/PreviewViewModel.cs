@@ -328,9 +328,18 @@
       // Actual.X: The width, in pixels, of the preview graphics window
       // Actual.Y: The height, in pixels, of the preview graphics window
       // ZoomDrawingContext.Extremum(...): seems to calculate extrema of the previewed object in the physical units represented in the dxf file
-      this.CanvasScale = Math.Min(
-        this.Actual?.X / (this.ZoomDrawingContext.Extremum(MinMax.Max, XY.X) - this.ZoomDrawingContext.Extremum(MinMax.Min, XY.X)) ?? 5,
-        this.Actual?.Y / (this.ZoomDrawingContext.Extremum(MinMax.Max, XY.Y) - this.ZoomDrawingContext.Extremum(MinMax.Min, XY.Y)) ?? 5);
+      double minx = this.ZoomDrawingContext.Extremum(MinMax.Min, XY.X);
+      double maxx = this.ZoomDrawingContext.Extremum(MinMax.Max, XY.X);
+      double miny = this.ZoomDrawingContext.Extremum(MinMax.Min, XY.Y);
+      double maxy = this.ZoomDrawingContext.Extremum(MinMax.Max, XY.Y);
+      double actualX = this.Actual.X;
+      double actualY = this.Actual.Y;
+      double scaleX = actualX / (maxx - minx);
+      double scaleY = actualX / (maxy - miny);
+      this.CanvasScale = Math.Min(scaleX, scaleY);
+      //this.CanvasScale = Math.Min(
+      //  this.Actual?.X / (this.ZoomDrawingContext.Extremum(MinMax.Max, XY.X) - this.ZoomDrawingContext.Extremum(MinMax.Min, XY.X)) ?? 5,
+      //  this.Actual?.Y / (this.ZoomDrawingContext.Extremum(MinMax.Max, XY.Y) - this.ZoomDrawingContext.Extremum(MinMax.Min, XY.Y)) ?? 5);
     }
 
     private void PreviewViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
