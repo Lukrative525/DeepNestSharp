@@ -19,6 +19,10 @@
     private IPointXY dragOffset;
     private IPointXY dragStart;
     private double canvasScale = 1;
+    private double canvasScaleMin = 0.5;
+    private double canvasScaleMax = 10;
+    private double gridWidth = 400;
+    private double gridHeight = 400;
     private IPointXY viewport;
     private RelayCommand fitAllCommand = null;
     private IPointXY actual;
@@ -154,9 +158,13 @@
       }
     }
 
-    public double CanvasScaleMax => 10;
+    public double CanvasScaleMax => this.canvasScaleMax;
 
-    public double CanvasScaleMin => 0.5;
+    public double CanvasScaleMin => this.canvasScaleMin;
+
+    public double GridWidth => this.gridWidth;
+
+    public double GridHeight => this.gridHeight;
 
     public IPointXY LowerBound
     {
@@ -325,21 +333,26 @@
 
     private void OnFitAll()
     {
-      // Actual.X: The width, in pixels, of the preview graphics window
-      // Actual.Y: The height, in pixels, of the preview graphics window
-      // ZoomDrawingContext.Extremum(...): seems to calculate extrema of the previewed object in the physical units represented in the dxf file
-      double minx = this.ZoomDrawingContext.Extremum(MinMax.Min, XY.X);
-      double maxx = this.ZoomDrawingContext.Extremum(MinMax.Max, XY.X);
-      double miny = this.ZoomDrawingContext.Extremum(MinMax.Min, XY.Y);
-      double maxy = this.ZoomDrawingContext.Extremum(MinMax.Max, XY.Y);
-      double actualX = this.Actual.X;
-      double actualY = this.Actual.Y;
-      double scaleX = actualX / (maxx - minx);
-      double scaleY = actualX / (maxy - miny);
+      // These are "magic numbers" until we figure out how to access their values programmatically
+      double horizontalScrollBarWidth = 20;
+      double verticalScrollBarWidth = 20;
+      double fieldWidth = this.Actual.X - verticalScrollBarWidth;
+      double fieldHeight = this.Actual.Y - horizontalScrollBarWidth;
+
+      //// Fits the grid on which the canvas is drawn inside the scrollviewer without the CANVAS extending past edges (grid may extend past in certain scenarios).
+      //if (this.ZoomDrawingContext.Height / this.ZoomDrawingContext.Width >= fieldHeight / fieldWidth)
+      //{
+      //  this.CanvasScale = fieldHeight / this.GridHeight;
+      //}
+      //else
+      //{
+      //  this.CanvasScale = fieldWidth / this.GridWidth;
+      //}
+
+      // Fits the grid on which the canvas is drawn inside the scrollviewer without the GRID extending past edges.
+      double scaleX = fieldWidth / this.GridWidth;
+      double scaleY = fieldHeight / this.GridHeight;
       this.CanvasScale = Math.Min(scaleX, scaleY);
-      //this.CanvasScale = Math.Min(
-      //  this.Actual?.X / (this.ZoomDrawingContext.Extremum(MinMax.Max, XY.X) - this.ZoomDrawingContext.Extremum(MinMax.Min, XY.X)) ?? 5,
-      //  this.Actual?.Y / (this.ZoomDrawingContext.Extremum(MinMax.Max, XY.Y) - this.ZoomDrawingContext.Extremum(MinMax.Min, XY.Y)) ?? 5);
     }
 
     private void PreviewViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
