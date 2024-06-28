@@ -1,5 +1,6 @@
 ﻿namespace DeepNestSharp.Domain.ViewModels
 {
+  using System.Collections.Generic;
   using System.Collections.ObjectModel;
   using DeepNestLib;
   using DeepNestLib.Placement;
@@ -10,6 +11,24 @@
     public double Width { get; private set; }
 
     public double Height { get; private set; }
+
+    public static ObservableSheetPlacement Shift(ObservableSheetPlacement sheetPlacement, double offsetX, double offsetY)
+    {
+      Sheet shiftedSheet = new Sheet(sheetPlacement.Sheet.Clone().ShiftToOrigin(), WithChildren.Included);
+      Sheet shiftedOriginalSheet = new Sheet(sheetPlacement.OriginalSheet.Clone().Shift(offsetX, offsetY), WithChildren.Included);
+
+      List<PartPlacement> shiftedPartPlacements = new List<PartPlacement>();
+      foreach (ObservablePartPlacement partPlacement in sheetPlacement.PartPlacements)
+      {
+        INfp shiftedPart = partPlacement.Part.Clone().Shift(partPlacement.X + offsetX, partPlacement.Y + offsetY);
+        PartPlacement shiftedPartPlacement = new PartPlacement(shiftedPart);
+        shiftedPartPlacements.Add(shiftedPartPlacement);
+      }
+
+      SheetPlacement shiftedSheetPlacement = new SheetPlacement(sheetPlacement.PlacementType, shiftedSheet, shiftedOriginalSheet, shiftedPartPlacements, sheetPlacement.MergedLength);
+
+      return new ObservableSheetPlacement(shiftedSheetPlacement);
+    }
 
     public void Set(ISheetPlacement sheetPlacement)
     {
@@ -25,10 +44,11 @@
     public IZoomPreviewDrawingContext For(ObservableSheetPlacement sheetPlacement)
     {
       this.Clear();
-      this.Width = sheetPlacement.OriginalSheet.WidthCalculated;
-      this.Height = sheetPlacement.OriginalSheet.HeightCalculated;
-      this.Add(sheetPlacement);
-      foreach (IPartPlacement partPlacement in sheetPlacement.PartPlacements)
+      ObservableSheetPlacement shiftedSheetPlacement = Shift(sheetPlacement, -sheetPlacement.MinX, -sheetPlacement.MinY);
+      this.Width = shiftedSheetPlacement.Sheet.WidthCalculated;
+      this.Height = shiftedSheetPlacement.Sheet.HeightCalculated;
+      this.Add(shiftedSheetPlacement);
+      foreach (IPartPlacement partPlacement in shiftedSheetPlacement.PartPlacements)
       {
         INfp part = partPlacement.Part;
         this.Add(partPlacement);

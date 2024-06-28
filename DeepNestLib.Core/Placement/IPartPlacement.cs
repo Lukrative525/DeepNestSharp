@@ -29,11 +29,13 @@
     object MergedSegments { get; set; }
 
     /// <summary>
+    /// WARNING: There may in an error in this summary, and this getter may not actually return a clone -->
     /// Gets a clone of the part that was placed. The clone will have been rotated (potentially by 0') but NOT shifted.
     /// </summary>
     INfp Part { get; }
 
     /// <summary>
+    /// WARNING: There may in an error in this summary, and this getter may not actually return a clone -->
     /// Gets a clone of the part that was placed. The clone will have been rotated (potentially by 0') AND shifted relative to it's sheet.
     /// </summary>
     INfp PlacedPart { get; }
