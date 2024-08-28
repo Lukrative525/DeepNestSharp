@@ -22,7 +22,7 @@
             var divider = Constants.HorizontalScrollDivider;
             var offset = scrollViewer.HorizontalOffset;
             var delta = e.Delta;
-            offset += delta / divider;
+            offset -= delta / divider;
             scrollViewer.ScrollToHorizontalOffset(offset);
             e.Handled = true;
           }
