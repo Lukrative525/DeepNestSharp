@@ -23,6 +23,8 @@
     private ObservablePartPlacement? capturePartPlacement;
     private System.Windows.Shapes.Polygon? capturePolygon;
 
+    private double pixelsPerUnit;
+
     public DrawingContextBoundZoomPreview()
     {
       this.InitializeComponent();
@@ -36,6 +38,12 @@
       this.scrollViewer.MouseMove += this.OnMouseMove;
 
       this.slider.ValueChanged += this.OnSliderValueChanged;
+    }
+
+    private double PixelsPerUnit
+    {
+      get => this.pixelsPerUnit;
+      set => this.pixelsPerUnit = value;
     }
 
     private static bool IsScrollModifierPressed
@@ -124,6 +132,7 @@
         BringToFront(canvas, polygon);
         if (IsDragModifierPressed && vm.MainViewModel.ActiveDocument is SheetPlacementViewModel)
         {
+          this.PixelsPerUnit = Math.Max(canvas.ActualWidth / vm.GridWidth, canvas.ActualHeight / vm.GridHeight);
           vm.DragStart = new SvgPoint(mousePos.X, mousePos.Y);
           this.scrollViewer.Cursor = Cursors.Hand;
           this.partPlacementStartPos = new Point(vm.SelectedPartPlacement.X, vm.SelectedPartPlacement.Y);
@@ -251,7 +260,7 @@
           if (IsDragModifierPressed)
           {
             IPointXY dragStart = vm.DragStart;
-            vm.DragOffset = new SvgPoint((vm.MousePosition.X - dragStart.X) / this.scaleTransform.ScaleX, (vm.MousePosition.Y - dragStart.Y) / this.scaleTransform.ScaleY);
+            vm.DragOffset = new SvgPoint(this.PixelsPerUnit * (vm.MousePosition.X - dragStart.X) / this.scaleTransform.ScaleX, this.PixelsPerUnit * (vm.MousePosition.Y - dragStart.Y) / this.scaleTransform.ScaleY);
 
             // System.Diagnostics.Debug.Print($"DragOffset={vm.DragOffset:N2}");
             this.capturePartPlacement.X = this.partPlacementStartPos.X + vm.DragOffset.X;
@@ -280,7 +289,7 @@
       if (vm.IsDragging && IsDragModifierPressed && vm.DragStart != null)
       {
         IPointXY dragStart = vm.DragStart;
-        vm.DragOffset = new SvgPoint((vm.MousePosition.X - dragStart.X) / this.scaleTransform.ScaleX, (vm.MousePosition.Y - dragStart.Y) / this.scaleTransform.ScaleY);
+        vm.DragOffset = new SvgPoint(this.PixelsPerUnit * (vm.MousePosition.X - dragStart.X) / this.scaleTransform.ScaleX, this.PixelsPerUnit * (vm.MousePosition.Y - dragStart.Y) / this.scaleTransform.ScaleY);
         System.Diagnostics.Debug.Print($"Drag commit@{vm.DragOffset.X:N2},{vm.DragOffset.Y:N2}");
         if (this.capturePartPlacement != null)
         {
